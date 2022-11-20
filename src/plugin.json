@@ -32,6 +32,11 @@
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
+  "routes": [
+    {
+      "url": "{{ .JsonData.URL }}"
+    }
+  ],
   "dependencies": {
     "grafanaDependency": "^9.1.2",
     "plugins": []

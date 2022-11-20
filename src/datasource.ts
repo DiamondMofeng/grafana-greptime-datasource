@@ -18,7 +18,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    this.URL = instanceSettings.jsonData.URL;
+    this.URL = instanceSettings.url!;
     setUrl(this.URL);
   }
 
