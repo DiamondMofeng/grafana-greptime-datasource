@@ -1,4 +1,4 @@
-import defaults from 'lodash/defaults';
+// import defaults from 'lodash/defaults';
 
 import {
   DataQueryRequest,
@@ -6,10 +6,12 @@ import {
   DataSourceApi,
   DataSourceInstanceSettings,
   MutableDataFrame,
-  FieldType,
+  // FieldType,
 } from '@grafana/data';
 
-import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
+// import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
+import { MyQuery, MyDataSourceOptions } from './types';
+import { doRequst, parseResponseToDataFrame } from 'greptimedb/greptimeService';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
@@ -17,23 +19,15 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
-    const { range } = options;
-    const from = range!.from.valueOf();
-    const to = range!.to.valueOf();
-
-    // Return a constant for each query.
-    const data = options.targets.map((target) => {
-      const query = defaults(target, defaultQuery);
-      return new MutableDataFrame({
-        refId: query.refId,
-        fields: [
-          { name: 'Time', values: [from, to], type: FieldType.time },
-          { name: 'Value', values: [query.constant, query.constant], type: FieldType.number },
-        ],
-      });
+    const promises = options.targets.map(async (target) => {
+      if (!target.queryText) {
+        return new MutableDataFrame();
+      }
+      const response = await doRequst(target.queryText!);
+      return parseResponseToDataFrame(response);
     });
 
-    return { data };
+    return Promise.all(promises).then((data) => ({ data }));
   }
 
   async testDatasource() {

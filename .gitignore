@@ -37,7 +37,8 @@ e2e-results/
 .github
 cypress/
 pkg
+
+
 *.go
-src/greptimedb
 go.mod
 go.sum
