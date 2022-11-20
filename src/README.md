@@ -2,4 +2,4 @@
 
 # Grafana Greptime
 
-Greptime datasource supporting for grafana
+Greptime datasource for grafana
