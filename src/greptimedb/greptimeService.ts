@@ -1,14 +1,11 @@
 import { FieldType, MutableDataFrame } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
 
-const URL = 'http://greptime.example.com';
-const SQL_URL = `${URL}/v1/sql`;
+let BaseUrl = '';
 
-export async function _doRequest(sql: String) {
-  const result = await getBackendSrv().post(`${SQL_URL}?sql=${sql}`);
-  console.log(result);
-  return result;
-}
+export const setUrl = (url: string) => {
+  BaseUrl = url;
+};
 
 enum GreptimeDataTypes {
   String = 'String',
@@ -56,8 +53,7 @@ export function parseResponseToDataFrame(response: GreptimeDBResponse): MutableD
 }
 
 export async function doRequst(sql: String): Promise<GreptimeDBResponse> {
-  const URL = 'http://greptime.mofengfeng.com';
-  const SQL_URL = `${URL}/v1/sql`;
+  const SQL_URL = `${BaseUrl}/v1/sql`;
 
   const response: GreptimeDBResponse = await getBackendSrv().post(`${SQL_URL}?sql=${sql}`);
   return response;

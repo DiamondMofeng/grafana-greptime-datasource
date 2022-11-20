@@ -14,6 +14,7 @@ export const defaultQuery: Partial<MyQuery> = {
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
   path?: string;
+  URL: string; //我们新加的
 }
 
 /**

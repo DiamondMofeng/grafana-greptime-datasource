@@ -10,6 +10,15 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 interface State {}
 
 export class ConfigEditor extends PureComponent<Props, State> {
+  onURLChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { onOptionsChange, options } = this.props;
+    const jsonData = {
+      ...options.jsonData,
+      URL: event.target.value,
+    };
+    onOptionsChange({ ...options, jsonData });
+  };
+
   onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { onOptionsChange, options } = this.props;
     const jsonData = {
@@ -53,6 +62,15 @@ export class ConfigEditor extends PureComponent<Props, State> {
     return (
       <div className="gf-form-group">
         <div className="gf-form">
+          <FormField
+            label="URL"
+            labelWidth={6}
+            inputWidth={20}
+            onChange={this.onURLChange}
+            value={jsonData.URL || ''}
+            placeholder="http://greptime.example.com"
+          />
+          {/* 自带的 */}
           <FormField
             label="Path"
             labelWidth={6}

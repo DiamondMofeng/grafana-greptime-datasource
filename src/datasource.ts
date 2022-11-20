@@ -11,11 +11,15 @@ import {
 
 // import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 import { MyQuery, MyDataSourceOptions } from './types';
-import { doRequst, parseResponseToDataFrame } from 'greptimedb/greptimeService';
+import { doRequst, parseResponseToDataFrame, setUrl } from 'greptimedb/greptimeService';
 
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
+  URL: string;
+
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
+    this.URL = instanceSettings.jsonData.URL;
+    setUrl(this.URL);
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
