@@ -6,15 +6,15 @@ export interface MyQuery extends DataQuery {
 }
 
 export const defaultQuery: Partial<MyQuery> = {
-  constant: 6.5,
+  // constant: 6.5,
 };
 
 /**
  * These are options configured for each DataSource instance
  */
 export interface MyDataSourceOptions extends DataSourceJsonData {
-  path?: string;
-  URL: string; //我们新加的
+  URL: string; // URL of the GreptimeDB server
+  queryLanguage: string; // Query language to use
 }
 
 /**

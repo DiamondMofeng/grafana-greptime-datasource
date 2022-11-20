@@ -1,7 +1,7 @@
 import React, { ChangeEvent, PureComponent } from 'react';
-import { LegacyForms } from '@grafana/ui';
+import { LegacyForms, Select } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { MyDataSourceOptions, MySecureJsonData } from '../types';
+import type { MyDataSourceOptions, MySecureJsonData } from '../types';
 
 const { SecretFormField, FormField } = LegacyForms;
 
@@ -9,36 +9,40 @@ interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> 
 
 interface State {}
 
+const queryLanguageOptions = [{ label: 'SQL', value: 'sql' }];
+
 export class ConfigEditor extends PureComponent<Props, State> {
-  onURLChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onOptionsChange, options } = this.props;
-    const jsonData = {
-      ...options.jsonData,
-      URL: event.target.value,
-    };
-    onOptionsChange({ ...options, jsonData });
-  };
-
-  onPathChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onOptionsChange, options } = this.props;
-    const jsonData = {
-      ...options.jsonData,
-      path: event.target.value,
-    };
-    onOptionsChange({ ...options, jsonData });
-  };
-
-  // Secure field (only sent to the backend)
-  onAPIKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const { onOptionsChange, options } = this.props;
+  changeJsonData = (key: string, value: any) => {
+    const { options, onOptionsChange } = this.props;
     onOptionsChange({
       ...options,
-      secureJsonData: {
-        apiKey: event.target.value,
+      jsonData: {
+        ...options.jsonData,
+        [key]: value,
       },
     });
   };
 
+  changeSecureJsonData = (key: string, value: any) => {
+    const { options, onOptionsChange } = this.props;
+    onOptionsChange({
+      ...options,
+      secureJsonData: {
+        ...options.secureJsonData,
+        [key]: value,
+      },
+    });
+  };
+
+  onChangeFactory = (key: keyof MyDataSourceOptions) => (event: ChangeEvent<HTMLInputElement>) => {
+    this.changeJsonData(key, event.target.value);
+  };
+
+  onSecureChangeFactory = (key: keyof MySecureJsonData) => (event: ChangeEvent<HTMLInputElement>) => {
+    this.changeSecureJsonData(key, event.target.value);
+  };
+
+  //TODO  will be replaced by a factory function
   onResetAPIKey = () => {
     const { onOptionsChange, options } = this.props;
     onOptionsChange({
@@ -60,39 +64,46 @@ export class ConfigEditor extends PureComponent<Props, State> {
     const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
 
     return (
-      <div className="gf-form-group">
-        <div className="gf-form">
-          <FormField
-            label="URL"
-            labelWidth={6}
-            inputWidth={20}
-            onChange={this.onURLChange}
-            value={jsonData.URL || ''}
-            placeholder="http://greptime.example.com"
-          />
-          {/* 自带的 */}
-          <FormField
-            label="Path"
-            labelWidth={6}
-            inputWidth={20}
-            onChange={this.onPathChange}
-            value={jsonData.path || ''}
-            placeholder="json field returned to frontend"
+      <div>
+        <h3 className="page-heading">Query Language</h3>
+        <div className="gf-form-group">
+          <Select
+            width={20}
+            value={jsonData.queryLanguage}
+            options={queryLanguageOptions}
+            onChange={(opt) => this.changeJsonData('queryLanguage', opt.value)}
           />
         </div>
-
-        <div className="gf-form-inline">
+        <h3 className="page-heading">HTTP</h3>
+        <div className="gf-form-group">
           <div className="gf-form">
-            <SecretFormField
-              isConfigured={(secureJsonFields && secureJsonFields.apiKey) as boolean}
-              value={secureJsonData.apiKey || ''}
-              label="API Key"
-              placeholder="secure json field (backend only)"
+            <FormField
+              label="URL"
               labelWidth={6}
               inputWidth={20}
-              onReset={this.onResetAPIKey}
-              onChange={this.onAPIKeyChange}
+              onChange={this.onChangeFactory('URL')}
+              value={jsonData.URL || ''}
+              placeholder="http://greptime.example.com"
             />
+          </div>
+        </div>
+        <h3 className="page-heading">Auth</h3>
+        <p>We have not implemented any authentication yet.</p>
+        <div className="gf-form-group">
+          <div className="gf-form-group">
+            <div className="gf-form">
+              <SecretFormField
+                isConfigured={(secureJsonFields && secureJsonFields.apiKey) as boolean}
+                value={secureJsonData.apiKey || ''}
+                label="API Key"
+                placeholder="Not used yet"
+                tooltip="Not used yet"
+                labelWidth={6}
+                inputWidth={20}
+                onReset={this.onResetAPIKey}
+                onChange={this.onSecureChangeFactory('apiKey')}
+              />
+            </div>
           </div>
         </div>
       </div>
