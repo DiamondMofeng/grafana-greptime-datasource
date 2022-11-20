@@ -58,9 +58,3 @@ export async function doRequst(sql: String): Promise<GreptimeDBResponse> {
   const response: GreptimeDBResponse = await getBackendSrv().post(`${SQL_URL}?sql=${sql}`);
   return response;
 }
-
-export async function doRequestAndParse(sql: String): Promise<MutableDataFrame> {
-  const response: GreptimeDBResponse = await doRequst(sql);
-
-  return parseResponseToDataFrame(response);
-}
