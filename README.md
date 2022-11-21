@@ -22,7 +22,7 @@ In order to load any unsigned Grafana plugin, you have to set you Grafana to Dev
 
 ## Using GreptimeDB in Grafana
 
-TODO
+For detailed instructions, see https://github.com/DiamondMofeng/grafana-greptime/blob/main/docs/Using%20GreptimeDB%20in%20Grafana.md
 
 ## TODO List
 
