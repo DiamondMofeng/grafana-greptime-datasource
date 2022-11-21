@@ -1,18 +1,18 @@
 {
   "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "datasource",
-  "name": "Grafana Greptime",
-  "id": "greptime-grafanagreptime-datasource",
+  "name": "GreptimeDB",
+  "id": "mofengfeng-greptimedb-datasource",
   "metrics": true,
-  "backend": true,
-  "executable": "gpx_grafana_greptime",
+  "backend": false,
   "info": {
-    "description": "Greptime datasource supporting for grafana",
+    "description": "Open source time series database",
     "author": {
       "name": "Greptime"
     },
     "keywords": [
-      "datasource"
+      "datasource",
+      "sql"
     ],
     "logos": {
       "small": "img/logo.svg",
