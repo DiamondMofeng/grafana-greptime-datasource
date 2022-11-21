@@ -6,10 +6,10 @@ import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from '../datasource';
 import { defaultQuery, MyDataSourceOptions, MyQuery } from '../types';
 
-type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
+//TODO consider refactor this component to functional component
 
+type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
 export class QueryEditor extends PureComponent<Props> {
-  getEditorValue: any | undefined;
   editor: monacoTypes.editor.IStandaloneCodeEditor | undefined;
 
   changeQuery = (key: keyof MyQuery, value: any) => {
@@ -17,7 +17,10 @@ export class QueryEditor extends PureComponent<Props> {
     onChange({ ...query, [key]: value });
   };
 
-  onChangeFactory = (key: keyof MyQuery) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  /**
+   * A Factory creating a change handler for a given query key.
+   */
+  onChangeFactory = (key: keyof MyQuery) => (event: ChangeEvent<HTMLInputElement>) => {
     this.changeQuery(key, event.target.value);
   };
 
@@ -25,11 +28,15 @@ export class QueryEditor extends PureComponent<Props> {
     this.editor = editor;
   };
 
-  onRawQueryChange = () => {
+  /**
+   * Save and run query with current text in the editor.
+   */
+  onEditorTextChange = () => {
     if (!this.editor) {
       return;
     }
     this.changeQuery('queryText', this.editor.getValue());
+    this.props.onRunQuery();
   };
 
   render() {
@@ -42,7 +49,8 @@ export class QueryEditor extends PureComponent<Props> {
           language="sql"
           value={query.queryText}
           onEditorDidMount={this.onEditorDidMount}
-          onBlur={this.onRawQueryChange}
+          onBlur={this.onEditorTextChange}
+          onSave={this.onEditorTextChange}
         />
       </div>
     );
