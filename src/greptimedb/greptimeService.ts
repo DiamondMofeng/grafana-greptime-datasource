@@ -1,40 +1,40 @@
 import { FieldType, MutableDataFrame } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
+import { GreptimeDataTypes, GreptimeDBResponse } from './types';
 
+//TODO refactor this to a class instead of using closures
 let BaseUrl = '';
 
 export const setUrl = (url: string) => {
   BaseUrl = url;
 };
 
-enum GreptimeDataTypes {
-  String = 'String',
-  Float64 = 'Float64',
-  Timestamp = 'Timestamp',
-}
-export interface GreptimeDBResponse {
-  code: number;
-  execution_time_ms: number;
-  //this is a single-element array
-  output: [
-    {
-      records: {
-        schema: {
-          column_schemas: Array<{
-            name: string;
-            data_type: GreptimeDataTypes;
-          }>;
-        };
-        rows: any[]; //TODO: I don't know how to type this and it seems unnecessary to type this.
-      };
-    }
-  ];
-}
-
 const greptimeTypeToGrafana: Record<GreptimeDataTypes, FieldType> = {
-  String: FieldType.string,
-  Float64: FieldType.number,
-  Timestamp: FieldType.time,
+  [GreptimeDataTypes.Null]: FieldType.other,
+
+  // Numeric types:
+  [GreptimeDataTypes.Boolean]: FieldType.boolean,
+  [GreptimeDataTypes.UInt8]: FieldType.number,
+  [GreptimeDataTypes.UInt16]: FieldType.number,
+  [GreptimeDataTypes.UInt32]: FieldType.number,
+  [GreptimeDataTypes.UInt64]: FieldType.number,
+  [GreptimeDataTypes.Int8]: FieldType.number,
+  [GreptimeDataTypes.Int16]: FieldType.number,
+  [GreptimeDataTypes.Int32]: FieldType.number,
+  [GreptimeDataTypes.Int64]: FieldType.number,
+  [GreptimeDataTypes.Float32]: FieldType.number,
+  [GreptimeDataTypes.Float64]: FieldType.number,
+
+  // String types:
+  [GreptimeDataTypes.String]: FieldType.string,
+  [GreptimeDataTypes.Binary]: FieldType.string,
+
+  // Date & Time types:
+  [GreptimeDataTypes.Date]: FieldType.time,
+  [GreptimeDataTypes.DateTime]: FieldType.time,
+  [GreptimeDataTypes.Timestamp]: FieldType.time,
+
+  [GreptimeDataTypes.List]: FieldType.other,
 };
 
 export function parseResponseToDataFrame(response: GreptimeDBResponse): MutableDataFrame {
