@@ -1,14 +1,39 @@
-# Greptime Datasource Plugin for Grafana
+# GreptimeDB Datasource Plugin for Grafana
 
-### TODO List
+![Grafana x GreptimeDB](https://blog.mofengfeng.com/wp-content/uploads/2022/11/plugin_transparent.png)
 
-- [ ] Add Support for time series query
+## Features
+
+Write sql in Grafana to query data from GreptimeDB, then visualization happens!
+
+## About GreptimeDB
+
+Greptime provides cloud-scale, fast and efficient Time Series Data Infrastructure
+
+[Visit Greptime's Official Website here](https://www.greptime.com/)
+
+## Install 
+
+As this plugin has not been signed by Grafana yet, you may need to manually drag the built plugin folder into your grafana plugin directory, which default at `/var/lib/grafana/plugins`
+
+To get the built plugin, please download it from the release page, or clone the repo then `npm run build`
+
+In order to load any unsigned Grafana plugin, you have to set you Grafana to Development mode. You can set environment variable `GF_DEFAULT_APP_MODE=development` or set `app_mode = development` in your `grafana.ini`
+
+## Using GreptimeDB in Grafana
+
+TODO
+
+## TODO List
+
+- [ ] Add support for time series query depending on the time interval given by grafana
 - [ ] Add support for more query protocols. Only Sql is supported now.
 - [ ] Drop-down list of fields when querying
-- [ ] Find a way to test this plugin
-- [ ] Sign this plugin
+- [ ] Add test cases
 - [ ] CI/CD
-### Commands
+- [ ] Sign this plugin
+
+## Commands
 
 1. Install dependencies
 
