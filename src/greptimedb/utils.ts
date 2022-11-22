@@ -1,13 +1,5 @@
 import { FieldType, MutableDataFrame } from '@grafana/data';
-import { getBackendSrv } from '@grafana/runtime';
-import { GreptimeDataTypes, GreptimeDBResponse } from './types';
-
-//TODO refactor this to a class instead of using closures
-let BaseUrl = '';
-
-export const setUrl = (url: string) => {
-  BaseUrl = url;
-};
+import { GreptimeColumnSchema, GreptimeDataTypes, GreptimeDBResponse } from './types';
 
 const greptimeTypeToGrafana: Record<GreptimeDataTypes, FieldType> = {
   [GreptimeDataTypes.Null]: FieldType.other,
@@ -37,6 +29,14 @@ const greptimeTypeToGrafana: Record<GreptimeDataTypes, FieldType> = {
   [GreptimeDataTypes.List]: FieldType.other,
 };
 
+export function mapGreptimeTypeToGrafana(greptimeType: GreptimeDataTypes): FieldType {
+  return greptimeTypeToGrafana[greptimeType];
+}
+
+export function extractColumnSchemas(response: GreptimeDBResponse): GreptimeColumnSchema[] {
+  return response.output[0].records.schema.column_schemas;
+}
+
 export function parseResponseToDataFrame(response: GreptimeDBResponse): MutableDataFrame {
   const columnSchemas = response.output[0].records.schema.column_schemas;
   const dataRows = response.output[0].records.rows;
@@ -50,11 +50,4 @@ export function parseResponseToDataFrame(response: GreptimeDBResponse): MutableD
     }),
   });
   return frame;
-}
-
-export async function doRequst(sql: String): Promise<GreptimeDBResponse> {
-  const SQL_URL = `${BaseUrl}/v1/sql`;
-
-  const response: GreptimeDBResponse = await getBackendSrv().post(`${SQL_URL}?sql=${sql}`);
-  return response;
 }

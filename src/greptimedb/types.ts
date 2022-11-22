@@ -34,13 +34,15 @@ export interface GreptimeDBResponse {
     {
       records: {
         schema: {
-          column_schemas: Array<{
-            name: string;
-            data_type: GreptimeDataTypes;
-          }>;
+          column_schemas: GreptimeColumnSchema[];
         };
-        rows: any[]; //TODO: I don't know how to type this and it seems unnecessary to type this.
+        rows: any[]; //? I don't know how to type this without generic, and `any` seems very fit
       };
     }
   ];
+}
+
+export interface GreptimeColumnSchema {
+  name: string;
+  data_type: GreptimeDataTypes;
 }

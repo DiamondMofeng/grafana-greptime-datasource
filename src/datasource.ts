@@ -11,15 +11,13 @@ import {
 
 // import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
 import { MyQuery, MyDataSourceOptions } from './types';
-import { doRequst, parseResponseToDataFrame, setUrl } from 'greptimedb/greptimeService';
-
+import { GreptimeDBHttpSqlClient } from 'greptimedb/sqlClient';
 export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
-  URL: string;
+  client: GreptimeDBHttpSqlClient;
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    this.URL = instanceSettings.url!;
-    setUrl(this.URL);
+    this.client = new GreptimeDBHttpSqlClient(instanceSettings.url!);
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
@@ -27,8 +25,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
       if (!target.queryText) {
         return new MutableDataFrame();
       }
-      const response = await doRequst(target.queryText!);
-      return parseResponseToDataFrame(response);
+      return await this.client.querySqlToDataFrame(target.queryText);
     });
 
     return Promise.all(promises).then((data) => ({ data }));
@@ -37,11 +34,11 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
   // health check for the data source.
   async testDatasource() {
     try {
-      const response = await doRequst('SELECT * FROM numbers LIMIT 5');
+      const response = await this.client.querySql('SELECT * FROM numbers LIMIT 5');
       if (response.code === 0 && response.output[0].records.rows.length === 5) {
         return {
           status: 'success',
-          message: 'Success',
+          message: 'Success to connect to GreptimeDB',
         };
       } else {
         return {
