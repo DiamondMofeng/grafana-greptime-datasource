@@ -3,13 +3,13 @@ import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent } from 'react';
 import { CodeEditor, monacoTypes } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
-import { DataSource } from '../datasource';
-import { defaultQuery, MyDataSourceOptions, MyQuery } from '../types';
+import { DataSource } from '../../datasource';
+import { defaultQuery, MyDataSourceOptions, MyQuery } from '../../types';
 
 //TODO consider refactor this component to functional component
 
 type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
-export class QueryEditor extends PureComponent<Props> {
+export class RawQueryEditor extends PureComponent<Props> {
   editor: monacoTypes.editor.IStandaloneCodeEditor | undefined;
 
   changeQuery = (key: keyof MyQuery, value: any) => {
