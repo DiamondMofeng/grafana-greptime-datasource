@@ -9,18 +9,17 @@ import {
   // FieldType,
 } from '@grafana/data';
 
-// import { MyQuery, MyDataSourceOptions, defaultQuery } from './types';
-import { MyQuery, MyDataSourceOptions } from './types';
+import { GreptimeQuery, GreptimeSourceOptions } from './types';
 import { GreptimeDBHttpSqlClient } from 'greptimedb/sqlClient';
-export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
+export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptions> {
   client: GreptimeDBHttpSqlClient;
 
-  constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
+  constructor(instanceSettings: DataSourceInstanceSettings<GreptimeSourceOptions>) {
     super(instanceSettings);
     this.client = new GreptimeDBHttpSqlClient(instanceSettings.url!, 'public');
   }
 
-  async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
+  async query(options: DataQueryRequest<GreptimeQuery>): Promise<DataQueryResponse> {
     const promises = options.targets.map(async (target) => {
       if (!target.queryText) {
         return new MutableDataFrame();

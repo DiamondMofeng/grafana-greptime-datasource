@@ -28,7 +28,7 @@ export enum GreptimeDataTypes {
   List = 'List',
 }
 
-export interface GreptimeDBResponse {
+export interface GreptimeResponse {
   code: number;
   execution_time_ms: number;
   //this is a single-element array

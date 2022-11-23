@@ -1,17 +1,17 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
-export interface MyQuery extends DataQuery {
+export interface GreptimeQuery extends DataQuery {
   queryText: string;
 }
 
-export const defaultQuery: Partial<MyQuery> = {
+export const defaultQuery: Partial<GreptimeQuery> = {
   queryText: 'SELECT * FROM numbers LIMIT 5',
 };
 
 /**
  * These are options configured for each DataSource instance
  */
-export interface MyDataSourceOptions extends DataSourceJsonData {
+export interface GreptimeSourceOptions extends DataSourceJsonData {
   URL: string; // URL of the GreptimeDB server
   queryLanguage: string; // Query language to use
 }
@@ -19,6 +19,6 @@ export interface MyDataSourceOptions extends DataSourceJsonData {
 /**
  * Value that is used in the backend, but never sent over HTTP to the frontend
  */
-export interface MySecureJsonData {
+export interface GreptimeSecureJsonData {
   apiKey?: string;
 }

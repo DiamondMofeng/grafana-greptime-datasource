@@ -4,15 +4,15 @@ import React, { ChangeEvent, PureComponent } from 'react';
 import { CodeEditor, monacoTypes } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from '../../datasource';
-import { defaultQuery, MyDataSourceOptions, MyQuery } from '../../types';
+import { defaultQuery, GreptimeSourceOptions, GreptimeQuery } from '../../types';
 
 //TODO consider refactor this component to functional component
 
-type Props = QueryEditorProps<DataSource, MyQuery, MyDataSourceOptions>;
+type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 export class RawQueryEditor extends PureComponent<Props> {
   editor: monacoTypes.editor.IStandaloneCodeEditor | undefined;
 
-  changeQuery = (key: keyof MyQuery, value: any) => {
+  changeQuery = (key: keyof GreptimeQuery, value: any) => {
     const { query, onChange } = this.props;
     onChange({ ...query, [key]: value });
   };
@@ -20,7 +20,7 @@ export class RawQueryEditor extends PureComponent<Props> {
   /**
    * A Factory creating a change handler for a given query key.
    */
-  onChangeFactory = (key: keyof MyQuery) => (event: ChangeEvent<HTMLInputElement>) => {
+  onChangeFactory = (key: keyof GreptimeQuery) => (event: ChangeEvent<HTMLInputElement>) => {
     this.changeQuery(key, event.target.value);
   };
 

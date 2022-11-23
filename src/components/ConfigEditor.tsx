@@ -1,11 +1,11 @@
 import React, { ChangeEvent, PureComponent } from 'react';
 import { LegacyForms, Select } from '@grafana/ui';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import type { MyDataSourceOptions, MySecureJsonData } from '../types';
+import type { GreptimeSourceOptions, GreptimeSecureJsonData } from '../types';
 
 const { SecretFormField, FormField } = LegacyForms;
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions> {}
 
 interface State {}
 
@@ -34,11 +34,11 @@ export class ConfigEditor extends PureComponent<Props, State> {
     });
   };
 
-  onChangeFactory = (key: keyof MyDataSourceOptions) => (event: ChangeEvent<HTMLInputElement>) => {
+  onChangeFactory = (key: keyof GreptimeSourceOptions) => (event: ChangeEvent<HTMLInputElement>) => {
     this.changeJsonData(key, event.target.value);
   };
 
-  onSecureChangeFactory = (key: keyof MySecureJsonData) => (event: ChangeEvent<HTMLInputElement>) => {
+  onSecureChangeFactory = (key: keyof GreptimeSecureJsonData) => (event: ChangeEvent<HTMLInputElement>) => {
     this.changeSecureJsonData(key, event.target.value);
   };
 
@@ -61,7 +61,7 @@ export class ConfigEditor extends PureComponent<Props, State> {
   render() {
     const { options } = this.props;
     const { jsonData, secureJsonFields } = options;
-    const secureJsonData = (options.secureJsonData || {}) as MySecureJsonData;
+    const secureJsonData = (options.secureJsonData || {}) as GreptimeSecureJsonData;
 
     return (
       <div>
