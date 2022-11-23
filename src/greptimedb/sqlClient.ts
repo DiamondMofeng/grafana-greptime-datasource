@@ -2,18 +2,21 @@ import { MutableDataFrame } from '@grafana/data';
 import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
 import { GreptimeColumnSchema, GreptimeDBResponse } from './types';
 import { lastValueFrom } from 'rxjs';
-import { extractColumnSchemas, parseResponseToDataFrame } from './utils';
+import { extractColumnSchemas, extractDataRows, parseResponseToDataFrame } from './utils';
 
-/**
- * We do not need to implement complex things like requests pool here, as `getBackendSrv()` provides all the necessary functionality.
- */
+//feel free to give suggestions on how to name methods in this class
+
+//We do not need to implement complex things like requests pool here, as `getBackendSrv()` provides all the necessary functionality.
+
 export class GreptimeDBHttpSqlClient {
   private readonly baseUrl: string;
-  // private readonly database: string;  //not used yet
+  private readonly SQL_URL: string;
+  private readonly database: string;
 
-  constructor(baseUrl: string) {
+  constructor(baseUrl: string, database: string) {
     this.baseUrl = baseUrl;
-    // this.database = database;
+    this.database = database;
+    this.SQL_URL = `${this.baseUrl}/v1/sql`;
   }
 
   private async fetch(options: BackendSrvRequest): Promise<GreptimeDBResponse> {
@@ -32,9 +35,8 @@ export class GreptimeDBHttpSqlClient {
   // }
 
   async querySql(sql: String): Promise<GreptimeDBResponse> {
-    const SQL_URL = `${this.baseUrl}/v1/sql`;
     const response: GreptimeDBResponse = await this.fetch({
-      url: SQL_URL,
+      url: this.SQL_URL,
       method: 'POST',
       params: {
         sql: sql,
@@ -49,10 +51,28 @@ export class GreptimeDBHttpSqlClient {
     return parseResponseToDataFrame(response);
   }
 
-  async queryFieldsOfTable(table: String): Promise<GreptimeColumnSchema[]> {
-    const SQL_URL = `${this.baseUrl}/v1/sql`;
+  /**
+   * Show tables in current database.
+   */
+  async showTables(): Promise<string[]> {
     const response: GreptimeDBResponse = await this.fetch({
-      url: SQL_URL,
+      url: this.SQL_URL,
+      method: 'POST',
+      params: {
+        sql: `SHOW TABLES FROM ${this.database}`,
+      },
+    });
+
+    return extractDataRows(response).map((row) => row[0]);
+  }
+
+  /**
+   * Currently use sql `SELECT * FROM ${table} LIMIT 0` to get column schemas.
+   * While there is `DESC TABLE ${table}` in GreptimeDB, I think the former is more convenient.
+   */
+  async queryFieldsOfTable(table: String): Promise<GreptimeColumnSchema[]> {
+    const response: GreptimeDBResponse = await this.fetch({
+      url: this.SQL_URL,
       method: 'POST',
       params: {
         sql: `SELECT * FROM ${table} LIMIT 0`,

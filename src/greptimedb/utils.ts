@@ -33,6 +33,10 @@ export function mapGreptimeTypeToGrafana(greptimeType: GreptimeDataTypes): Field
   return greptimeTypeToGrafana[greptimeType];
 }
 
+export function extractDataRows(response: GreptimeDBResponse): FieldType[][] {
+  return response.output[0].records.rows;
+}
+
 export function extractColumnSchemas(response: GreptimeDBResponse): GreptimeColumnSchema[] {
   return response.output[0].records.schema.column_schemas;
 }

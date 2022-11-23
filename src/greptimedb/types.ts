@@ -1,3 +1,5 @@
+import { FieldType } from '@grafana/data';
+
 export enum GreptimeDataTypes {
   Null = 'Null',
 
@@ -36,7 +38,7 @@ export interface GreptimeDBResponse {
         schema: {
           column_schemas: GreptimeColumnSchema[];
         };
-        rows: any[]; //? I don't know how to type this without generic, and `any` seems very fit
+        rows: FieldType[][]; //? I don't know how to type this without generic, and `FieldType` in grafana seems very fit
       };
     }
   ];

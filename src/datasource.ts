@@ -17,7 +17,7 @@ export class DataSource extends DataSourceApi<MyQuery, MyDataSourceOptions> {
 
   constructor(instanceSettings: DataSourceInstanceSettings<MyDataSourceOptions>) {
     super(instanceSettings);
-    this.client = new GreptimeDBHttpSqlClient(instanceSettings.url!);
+    this.client = new GreptimeDBHttpSqlClient(instanceSettings.url!, 'public');
   }
 
   async query(options: DataQueryRequest<MyQuery>): Promise<DataQueryResponse> {
