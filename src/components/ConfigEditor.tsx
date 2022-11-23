@@ -1,11 +1,13 @@
 import React, { ChangeEvent } from 'react';
-import { LegacyForms, Select } from '@grafana/ui';
+import { Alert, LegacyForms, Select } from '@grafana/ui';
 import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import type { GreptimeSourceOptions, GreptimeSecureJsonData } from '../types';
 
 const { SecretFormField, FormField } = LegacyForms;
 
-interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions> {}
+interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions> {
+  //place holder
+}
 
 const queryLanguageOptions = [{ label: 'SQL', value: 'sql' }];
 
@@ -71,16 +73,42 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
         />
       </div>
       <h3 className="page-heading">HTTP</h3>
+      <Alert severity="info" title="Database Access">
+        <p>
+          Setting the database for this datasource does not deny access to other databases.
+          <br />
+          Users can still query other databases using the query syntax like:
+          <br />
+          <code>SELECT * FROM &quot;other_db&quot;.&quot;tablename&quot;.&quot;field&quot;</code>
+          <br />
+          <br />
+          To support data isolation and security, make sure appropriate permissions are configured in GreptimeDB.
+        </p>
+      </Alert>
       <div className="gf-form-group">
-        <div className="gf-form">
-          <FormField
-            label="URL"
-            labelWidth={6}
-            inputWidth={20}
-            onChange={onChangeFactory('URL')}
-            value={jsonData.URL || ''}
-            placeholder="http://greptime.example.com"
-          />
+        <div className="gf-form-inline">
+          <div className="gf-form">
+            <FormField
+              label="URL"
+              labelWidth={6}
+              inputWidth={20}
+              onChange={onChangeFactory('URL')}
+              value={jsonData.URL || ''}
+              placeholder="http://greptime.example.com"
+            />
+          </div>
+        </div>
+        <div className="gf-form-inline">
+          <div className="gf-form">
+            <FormField
+              label="database"
+              labelWidth={6}
+              inputWidth={20}
+              onChange={onChangeFactory('database')}
+              value={jsonData.database || 'public'}
+              placeholder="public"
+            />
+          </div>
         </div>
       </div>
       <h3 className="page-heading">Auth</h3>

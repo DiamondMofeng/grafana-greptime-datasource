@@ -13,6 +13,7 @@ export const defaultQuery: Partial<GreptimeQuery> = {
  */
 export interface GreptimeSourceOptions extends DataSourceJsonData {
   URL: string; // URL of the GreptimeDB server
+  database: string; // Database to use
   queryLanguage: string; // Query language to use
 }
 
