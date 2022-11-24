@@ -5,8 +5,8 @@ export interface GreptimeQuery extends DataQuery {
   /** Table to query from */
   fromTable?: string;
   timeColumn?: string;
-  /** Select from ... */
-  valueColumns?: string[];
+  /** Selected column names */
+  selectedColumns?: string[];
   queryText: string;
 }
 
@@ -14,6 +14,7 @@ export const defaultQuery: Partial<GreptimeQuery> = {
   // fromTable: '',
   // timeColumn: '',
   queryText: 'SELECT * FROM numbers LIMIT 5',
+  selectedColumns: [],
 };
 
 /**

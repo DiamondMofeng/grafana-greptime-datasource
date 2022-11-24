@@ -6,6 +6,7 @@ import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/
 import { css } from '@emotion/css';
 import { defaults } from 'lodash';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
+import { AddSegment } from './AddSegment';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -17,7 +18,7 @@ export const VisualQueryEditor = (props: Props) => {
   const { client } = datasource;
 
   const query = defaults(oriQuery, defaultQuery);
-  const { fromTable, timeColumn } = query;
+  const { fromTable, timeColumn, selectedColumns: oriSelectedColumns } = query;
 
   const styles = useStyles2(getStyles);
 
@@ -66,6 +67,33 @@ export const VisualQueryEditor = (props: Props) => {
       .map((column) => toOption(column.name));
   }, [getColumnSchema]);
 
+  //* For Select Segment
+
+  const selectedColumns = (oriSelectedColumns ?? []).concat(['foobar']); //last one is for add button
+
+  const unselectedColumnsSchemas = useMemo(async () => {
+    const columns = await getColumnSchema;
+    return columns.filter((column) => !selectedColumns.includes(column.name));
+  }, [getColumnSchema, selectedColumns]);
+
+  const handleLoadUnselectedColumns = async () => {
+    return (await unselectedColumnsSchemas).map((column) => toOption(column.name));
+  };
+
+  const handleAddColumn = (select: SelectableValue<string>) => {
+    const newSelectedColumns = selectedColumns.slice(0, -1).concat([select.value!]);
+    changeQueryByKey('selectedColumns', newSelectedColumns);
+  };
+
+  /**
+   * Should return self value concat other unselected values.
+   */
+  const handleLoadReselectColumns = (selfVal: string) => {
+    return async () => {
+      return [toOption(selfVal)].concat(await handleLoadUnselectedColumns());
+    };
+  };
+
   return (
     <>
       <div>
@@ -84,6 +112,23 @@ export const VisualQueryEditor = (props: Props) => {
             loadOptions={async () => await getTimeColumns}
           />
         </SegmentSection>
+        {selectedColumns.map((column, idx) => (
+          <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={column}>
+            {idx === selectedColumns.length - 1 ? (
+              <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
+            ) : (
+              <>
+                <SegmentAsync
+                  value={column}
+                  onChange={() => {
+                    return;
+                  }}
+                  loadOptions={handleLoadReselectColumns(column)}
+                />
+              </>
+            )}
+          </SegmentSection>
+        ))}
       </div>
     </>
   );
