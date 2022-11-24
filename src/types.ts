@@ -1,10 +1,17 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface GreptimeQuery extends DataQuery {
+  /** Table to query from */
+  fromTable?: string;
+  timeColumn?: string;
+  /** Select from ... */
+  valueColumns?: string[];
   queryText: string;
 }
 
 export const defaultQuery: Partial<GreptimeQuery> = {
+  // fromTable: '',
+  // timeColumn: '',
   queryText: 'SELECT * FROM numbers LIMIT 5',
 };
 
