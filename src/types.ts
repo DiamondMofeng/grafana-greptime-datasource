@@ -1,6 +1,7 @@
 import { DataQuery, DataSourceJsonData } from '@grafana/data';
 
 export interface GreptimeQuery extends DataQuery {
+  isRawQuery?: boolean;
   /** Table to query from */
   fromTable?: string;
   timeColumn?: string;
