@@ -7,6 +7,7 @@ import { css } from '@emotion/css';
 import { defaults } from 'lodash';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
 import { AddSegment } from './AddSegment';
+import { RemoveSegmentButton } from './RemoveSegment';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -94,6 +95,13 @@ export const VisualQueryEditor = (props: Props) => {
     };
   };
 
+  const handleRemoveSelectedColumn = (columnName: string) => {
+    return () => {
+      const newSelectedColumns = (oriSelectedColumns ?? []).filter((name) => name !== columnName);
+      changeQueryByKey('selectedColumns', newSelectedColumns);
+    };
+  };
+
   return (
     <>
       <div>
@@ -112,19 +120,20 @@ export const VisualQueryEditor = (props: Props) => {
             loadOptions={async () => await getTimeColumns}
           />
         </SegmentSection>
-        {selectedColumns.map((column, idx) => (
-          <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={column}>
+        {selectedColumns.map((colName, idx) => (
+          <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
             {idx === selectedColumns.length - 1 ? (
               <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
             ) : (
               <>
                 <SegmentAsync
-                  value={column}
+                  value={colName}
                   onChange={() => {
                     return;
                   }}
-                  loadOptions={handleLoadReselectColumns(column)}
+                  loadOptions={handleLoadReselectColumns(colName)}
                 />
+                <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(colName)} />
               </>
             )}
           </SegmentSection>
