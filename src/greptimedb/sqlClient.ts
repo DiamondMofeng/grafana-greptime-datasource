@@ -11,7 +11,7 @@ import { extractColumnSchemas, extractDataRows, parseResponseToDataFrame } from 
 export class GreptimeDBHttpSqlClient {
   private readonly baseUrl: string;
   private readonly SQL_URL: string;
-  private readonly database: string;
+  readonly database: string;
 
   constructor(baseUrl: string, database: string) {
     this.baseUrl = baseUrl;
