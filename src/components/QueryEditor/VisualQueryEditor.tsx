@@ -72,10 +72,13 @@ export const VisualQueryEditor = (props: Props) => {
 
   const selectedColumns = (oriSelectedColumns ?? []).concat(['foobar']); //last one is for add button
 
+  /**
+   * GreptimeDB's sql syntax do not allow select same column twice.
+   */
   const unselectedColumnsSchemas = useMemo(async () => {
     const columns = await getColumnSchema;
-    return columns.filter((column) => !selectedColumns.includes(column.name));
-  }, [getColumnSchema, selectedColumns]);
+    return columns.filter((column) => ![...selectedColumns, timeColumn].includes(column.name));
+  }, [getColumnSchema, selectedColumns, timeColumn]);
 
   const handleLoadUnselectedColumns = async () => {
     return (await unselectedColumnsSchemas).map((column) => toOption(column.name));
@@ -92,6 +95,16 @@ export const VisualQueryEditor = (props: Props) => {
   const handleLoadReselectColumns = (selfVal: string) => {
     return async () => {
       return [toOption(selfVal)].concat(await handleLoadUnselectedColumns());
+    };
+  };
+
+  /**
+   * Reselect a selected column.
+   */
+  const handleSelectedColumnChange = (columnName: string) => {
+    return (select: SelectableValue<string>) => {
+      const newSelectedColumns = (oriSelectedColumns ?? []).map((name) => (name === columnName ? select.value! : name));
+      changeQueryByKey('selectedColumns', newSelectedColumns);
     };
   };
 
@@ -128,9 +141,7 @@ export const VisualQueryEditor = (props: Props) => {
               <>
                 <SegmentAsync
                   value={colName}
-                  onChange={() => {
-                    return;
-                  }}
+                  onChange={handleSelectedColumnChange(colName)}
                   loadOptions={handleLoadReselectColumns(colName)}
                 />
                 <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(colName)} />
