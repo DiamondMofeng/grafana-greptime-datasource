@@ -8,6 +8,7 @@ import { defaults } from 'lodash';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
 import { AddSegment } from './AddSegment';
 import { RemoveSegmentButton } from './RemoveSegment';
+import { buildQuery } from 'utils/sqlBuilder';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -15,7 +16,7 @@ const toOption = (value: string) => ({ label: value, value });
 
 export const VisualQueryEditor = (props: Props) => {
   // const { query, onChange, onRunQuery, datasource, range, data } = props;
-  const { datasource, query: oriQuery, onChange } = props;
+  const { datasource, query: oriQuery, onChange, onRunQuery } = props;
   const { client } = datasource;
 
   const query = defaults(oriQuery, defaultQuery);
@@ -23,8 +24,21 @@ export const VisualQueryEditor = (props: Props) => {
 
   const styles = useStyles2(getStyles);
 
+  /**
+   * When the query object changes, we build a new sql and query it.
+   */
+  //? Is there a time when we don't want to query?
+  //? Anyway, I find that Grafana's official plugins also throws uncaught errors when the query is not valid.
+  const onUpdateQuery = (newQuery: GreptimeQuery) => {
+    const newSql = buildQuery(newQuery, datasource);
+    onChange({ ...newQuery, queryText: newSql });
+    onRunQuery();
+  };
+
   const changeQueryByKey = (key: keyof GreptimeQuery, value: any) => {
-    onChange({ ...query, [key]: value });
+    const newQuery = { ...query, [key]: value };
+    onChange(newQuery);
+    onUpdateQuery(newQuery);
   };
 
   const handleFromTableChange = (select: SelectableValue<string>) => {
