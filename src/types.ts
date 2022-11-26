@@ -7,6 +7,8 @@ export interface GreptimeQuery extends DataQuery {
   timeColumn?: string;
   /** Selected column names */
   selectedColumns?: string[];
+  /** Where */
+  whereConditions?: string[];
   queryText: string;
 }
 

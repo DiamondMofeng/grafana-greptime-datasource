@@ -1,14 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import type { DataSource } from 'datasource';
 import { FieldType, GrafanaTheme2, QueryEditorProps, SelectableValue } from '@grafana/data';
 import { defaultQuery, GreptimeQuery, GreptimeSourceOptions } from 'types';
-import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/ui';
+import { InlineLabel, SegmentAsync, SegmentInput, SegmentSection, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { defaults } from 'lodash';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
 import { AddSegment } from './AddSegment';
 import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
+import { NonStateSegmentInput } from './NonStateSegmentInput';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -20,10 +21,11 @@ export const VisualQueryEditor = (props: Props) => {
   const { client } = datasource;
 
   const query = defaults(oriQuery, defaultQuery);
-  const { fromTable, timeColumn, selectedColumns: oriSelectedColumns } = query;
+  const { fromTable, timeColumn, selectedColumns: oriSelectedColumns, whereConditions: oriWhereConditions } = query;
 
   const styles = useStyles2(getStyles);
 
+  //TODO!: Below logic makes the component render more than once, which affects the performance.
   /**
    * When the query object changes, we build a new sql and query it.
    */
@@ -129,6 +131,38 @@ export const VisualQueryEditor = (props: Props) => {
     };
   };
 
+  //* For Where Segment
+
+  const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
+  console.log('whereConditions', whereConditions);
+  console.log('oriWhereConditions', oriWhereConditions);
+
+  //TODO: this state should not be placed here, as this makes the component rerender frequently.
+  const [newWhereCondition, setNewWhereCondition] = useState('');
+
+  const handleAddWhereCondition = (newCondition: string | number) => {
+    if (newCondition === '') {
+      return;
+    }
+    const newWhereConditions = (oriWhereConditions ?? []).concat([`${newCondition}`]);
+    setNewWhereCondition('');
+    changeQueryByKey('whereConditions', newWhereConditions);
+  };
+
+  const handleChangeWhereCondition = (idx: number) => {
+    return (newCondition: string | number) => {
+      const newWhereConditions = (oriWhereConditions ?? []).map((c, i) => (i === idx ? `${newCondition}` : c));
+      changeQueryByKey('whereConditions', newWhereConditions);
+    };
+  };
+
+  const handleRemoveWhereCondition = (idx: number) => {
+    return () => {
+      const newWhereConditions = (oriWhereConditions ?? []).filter((c, i) => i !== idx);
+      changeQueryByKey('whereConditions', newWhereConditions);
+    };
+  };
+
   return (
     <>
       <div>
@@ -147,6 +181,7 @@ export const VisualQueryEditor = (props: Props) => {
             loadOptions={async () => await getTimeColumns}
           />
         </SegmentSection>
+        {/* SELECT */}
         {selectedColumns.map((colName, idx) => (
           <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
             {idx === selectedColumns.length - 1 ? (
@@ -163,6 +198,25 @@ export const VisualQueryEditor = (props: Props) => {
             )}
           </SegmentSection>
         ))}
+        {/* WHERE */}
+        {whereConditions.map((conditionStr, idx) => (
+          <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={idx + conditionStr}>
+            {idx === whereConditions.length - 1 ? (
+              <NonStateSegmentInput
+                placeholder={'+'}
+                value={newWhereCondition}
+                onChange={handleAddWhereCondition}
+                onInputChange={setNewWhereCondition}
+              />
+            ) : (
+              <>
+                <SegmentInput value={conditionStr} inputPlaceholder={''} onChange={handleChangeWhereCondition(idx)} />
+                <RemoveSegmentButton handelRemoveSegment={handleRemoveWhereCondition(idx)} />
+              </>
+            )}
+          </SegmentSection>
+        ))}
+        {/* GROUP BY */}
       </div>
     </>
   );
