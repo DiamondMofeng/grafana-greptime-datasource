@@ -134,8 +134,6 @@ export const VisualQueryEditor = (props: Props) => {
   //* For Where Segment
 
   const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
-  console.log('whereConditions', whereConditions);
-  console.log('oriWhereConditions', oriWhereConditions);
 
   //TODO: this state should not be placed here, as this makes the component rerender frequently.
   const [newWhereCondition, setNewWhereCondition] = useState('');
