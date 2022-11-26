@@ -1,7 +1,7 @@
 {
-  "name": "grafana-greptime",
-  "version": "0.0.1",
-  "description": "Greptime datasource supporting for grafana",
+  "name": "grafana-greptime-datasource",
+  "version": "0.1.0",
+  "description": "GreptimeDB Datasource Plugin for Grafana",
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
     "dev": "webpack -w -c ./.config/webpack/webpack.config.ts --env development",
