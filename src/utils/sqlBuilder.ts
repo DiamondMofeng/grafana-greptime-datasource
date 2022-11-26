@@ -10,8 +10,15 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
     return query.queryText;
   }
   const { client } = datasource;
-  const { fromTable, timeColumn, selectedColumns } = query;
+  const { fromTable, timeColumn, selectedColumns, whereConditions } = query;
   const columns = [...(selectedColumns || []), timeColumn].join(', ');
-  const queryText = `SELECT ${columns} FROM ${client.database}.${fromTable}`;
+
+  const select = `SELECT ${columns} `;
+  const from = `FROM ${client.database}.${fromTable} `;
+  const where = whereConditions?.length ? `WHERE ${whereConditions.join(' AND ')}` : ''; //TODO only AND for now
+  const queryText = `  ${select}
+  ${from}
+  ${where}
+    `;
   return queryText;
 }
