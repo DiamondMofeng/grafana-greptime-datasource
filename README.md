@@ -4,7 +4,8 @@
 
 ## Features
 
-Write sql in Grafana to query data from GreptimeDB, then visualization happens!
+Write sql or use the visual query editor in Grafana to query data from GreptimeDB, then visualization happens!
+![Plugin Example](https://blog.mofengfeng.com/wp-content/uploads/2022/11/pluginExample.png)
 
 ## About GreptimeDB
 
@@ -26,9 +27,10 @@ For detailed instructions, see https://github.com/DiamondMofeng/grafana-greptime
 
 ## TODO List
 
-- [ ] Add support for time series query depending on the time interval given by grafana
+- [ ] Add support for time series query depending on the time interval given by grafana.
 - [ ] Add support for more query protocols. Only Sql is supported now.
-- [ ] Drop-down list of fields when querying
+- [ ] Add support for Aggregate function and `Group By`
+- [x] Drop-down list of fields when querying
 - [ ] Add test cases
 - [ ] CI/CD
 - [ ] Sign this plugin

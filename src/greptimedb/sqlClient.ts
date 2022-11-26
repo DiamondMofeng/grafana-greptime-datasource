@@ -11,7 +11,7 @@ import { extractColumnSchemas, extractDataRows, parseResponseToDataFrame } from 
 export class GreptimeDBHttpSqlClient {
   private readonly baseUrl: string;
   private readonly SQL_URL: string;
-  private readonly database: string;
+  readonly database: string;
 
   constructor(baseUrl: string, database: string) {
     this.baseUrl = baseUrl;
@@ -70,7 +70,7 @@ export class GreptimeDBHttpSqlClient {
    * Currently use sql `SELECT * FROM ${table} LIMIT 0` to get column schemas.
    * While there is `DESC TABLE ${table}` in GreptimeDB, I think the former is more convenient.
    */
-  async queryFieldsOfTable(table: String): Promise<GreptimeColumnSchema[]> {
+  async queryColumnSchemaOfTable(table: String): Promise<GreptimeColumnSchema[]> {
     const response: GreptimeResponse = await this.fetch({
       url: this.SQL_URL,
       method: 'POST',
@@ -80,5 +80,10 @@ export class GreptimeDBHttpSqlClient {
     });
 
     return extractColumnSchemas(response);
+  }
+
+  async queryColumnNamesOfTable(table: String): Promise<string[]> {
+    const schemas = await this.queryColumnSchemaOfTable(table);
+    return schemas.map((schema) => schema.name);
   }
 }
