@@ -61,7 +61,7 @@ export class GreptimeDBHttpSqlClient {
       method: 'POST',
       params: {
         sql: `SHOW TABLES`,
-        db: this.database
+        db: this.database,
       },
     });
 
@@ -78,7 +78,7 @@ export class GreptimeDBHttpSqlClient {
       method: 'POST',
       params: {
         sql: `SELECT * FROM ${table} LIMIT 0`,
-        db: this.database
+        db: this.database,
       },
     });
 
