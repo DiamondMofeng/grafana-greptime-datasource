@@ -19,6 +19,11 @@ export class GreptimeDBHttpSqlClient {
     this.SQL_URL = `${this.baseUrl}/v1/sql`;
   }
 
+  async healthCheck(): Promise<boolean> {
+    const response = await getBackendSrv().get<{}>(`${this.baseUrl}/health`);
+    return JSON.stringify(response) === JSON.stringify({});
+  }
+
   private async fetch(options: BackendSrvRequest): Promise<GreptimeResponse> {
     const response = lastValueFrom(getBackendSrv().fetch<GreptimeResponse>(options));
     return (await response).data;

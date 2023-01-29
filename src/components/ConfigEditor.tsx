@@ -11,6 +11,8 @@ interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions
 
 const queryLanguageOptions = [{ label: 'SQL', value: 'sql' }];
 
+const DEFAULT_DATABASE = 'public';
+
 export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
   const { options, onOptionsChange } = props;
   const { jsonData, secureJsonFields } = options;
@@ -105,8 +107,8 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
               labelWidth={6}
               inputWidth={20}
               onChange={onChangeFactory('database')}
-              value={jsonData.database || 'public'}
-              placeholder="public"
+              value={jsonData.database ?? DEFAULT_DATABASE}
+              // placeholder={DEFAULT_DATABASE}
             />
           </div>
         </div>
