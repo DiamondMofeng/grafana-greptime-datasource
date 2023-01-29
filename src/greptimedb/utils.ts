@@ -24,7 +24,11 @@ const greptimeTypeToGrafana: Record<GreptimeDataTypes, FieldType> = {
   // Date & Time types:
   [GreptimeDataTypes.Date]: FieldType.time,
   [GreptimeDataTypes.DateTime]: FieldType.time,
-  [GreptimeDataTypes.Timestamp]: FieldType.time,
+
+  [GreptimeDataTypes.TimestampSecond]: FieldType.time,
+  [GreptimeDataTypes.TimestampMillisecond]: FieldType.time,
+  [GreptimeDataTypes.TimestampMicrosecond]: FieldType.time,
+  [GreptimeDataTypes.TimestampNanosecond]: FieldType.time,
 
   [GreptimeDataTypes.List]: FieldType.other,
 };

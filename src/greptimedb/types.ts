@@ -21,9 +21,21 @@ export enum GreptimeDataTypes {
   Binary = 'Binary',
 
   // Date & Time types:
+
+  /**
+   * Date representing the elapsed time since UNIX epoch (1970-01-01) in days (32 bits).
+   */
   Date = 'Date',
+  /**
+   * Datetime representing the elapsed time since UNIX epoch (1970-01-01) in
+   * seconds/milliseconds/microseconds/nanoseconds, determined by precision.
+   */
   DateTime = 'DateTime',
-  Timestamp = 'Timestamp',
+
+  TimestampSecond = 'TimestampSecond',
+  TimestampMillisecond = 'TimestampMillisecond',
+  TimestampMicrosecond = 'TimestampMicrosecond',
+  TimestampNanosecond = 'TimestampNanosecond',
 
   List = 'List',
 }
