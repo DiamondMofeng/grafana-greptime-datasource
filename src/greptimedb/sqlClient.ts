@@ -1,8 +1,8 @@
-import { MutableDataFrame } from '@grafana/data';
+import type { MutableDataFrame } from '@grafana/data';
 import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
-import { GreptimeColumnSchema, GreptimeResponse } from './types';
+import type { GreptimeColumnSchema, GreptimeDataTypes, GreptimeResponse } from './types';
 import { lastValueFrom } from 'rxjs';
-import { extractColumnSchemas, extractDataRows, parseResponseToDataFrame } from './utils';
+import { extractDataRows, parseResponseToDataFrame } from './utils';
 
 //feel free to give suggestions on how to name methods in this class
 
@@ -74,20 +74,24 @@ export class GreptimeDBHttpSqlClient {
   }
 
   /**
-   * Currently use sql `SELECT * FROM ${table} LIMIT 0` to get column schemas.
-   * While there is `DESC TABLE ${table}` in GreptimeDB, I think the former is more convenient.
+   * Use `DESC TABLE ${table}` to get column schemas.
+   * TODO Currently `DESC` do not support `db` parameter, so we have to use `DESC TABLE ${db}.${table}`
    */
   async queryColumnSchemaOfTable(table: String): Promise<GreptimeColumnSchema[]> {
-    const response: GreptimeResponse = await this.fetch({
+    // [Field, Type, Null, Default, Semantic Type]
+    const response: GreptimeResponse<[string, GreptimeDataTypes, string, string, string]> = await this.fetch({
       url: this.SQL_URL,
       method: 'POST',
       params: {
-        sql: `SELECT * FROM ${table} LIMIT 0`,
-        db: this.database,
+        sql: `DESC TABLE ${this.database}.${table}`,
+        // db: this.database,
       },
     });
 
-    return extractColumnSchemas(response);
+    return response.output[0].records.rows.map((row) => ({
+      name: row[0],
+      data_type: row[1],
+    }));
   }
 
   async queryColumnNamesOfTable(table: String): Promise<string[]> {
