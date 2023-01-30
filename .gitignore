@@ -33,8 +33,9 @@ e2e-results/
 
 .eslintcache
 
-# temp
-.github
+# Temp
+.github/workflows/ci.yml
+.github/workflows/release.yml
 cypress/
 pkg
 
