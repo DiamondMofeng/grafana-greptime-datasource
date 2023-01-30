@@ -1,5 +1,3 @@
-import { FieldType } from '@grafana/data';
-
 export enum GreptimeDataTypes {
   Null = 'Null',
 
@@ -40,7 +38,10 @@ export enum GreptimeDataTypes {
   List = 'List',
 }
 
-export interface GreptimeResponse {
+/**
+ * T is usually a tuple
+ */
+export interface GreptimeResponse<T extends any[] = any[]> {
   code: number;
   execution_time_ms: number;
   //this is a single-element array
@@ -50,7 +51,7 @@ export interface GreptimeResponse {
         schema: {
           column_schemas: GreptimeColumnSchema[];
         };
-        rows: FieldType[][]; //? I don't know how to type this without generic, and `FieldType` in grafana seems very fit
+        rows: T[];
       };
     }
   ];

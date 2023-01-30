@@ -24,8 +24,8 @@ export class GreptimeDBHttpSqlClient {
     return JSON.stringify(response) === JSON.stringify({});
   }
 
-  private async fetch(options: BackendSrvRequest): Promise<GreptimeResponse> {
-    const response = lastValueFrom(getBackendSrv().fetch<GreptimeResponse>(options));
+  private async fetch<T extends any[] = any[]>(options: BackendSrvRequest): Promise<GreptimeResponse<T>> {
+    const response = lastValueFrom(getBackendSrv().fetch<GreptimeResponse<T>>(options));
     return (await response).data;
   }
 
