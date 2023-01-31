@@ -13,7 +13,9 @@
     "lint:fix": "yarn lint --fix",
     "e2e": "yarn cypress install && yarn grafana-e2e run",
     "e2e:update": "yarn cypress install && yarn grafana-e2e run --update-screenshots",
-    "server": "docker-compose up --build"
+    "server": "docker-compose up --build",
+    "server:up": "docker-compose up -d --build",
+    "server:stop": "docker-compose stop"
   },
   "author": "Mofeng",
   "license": "Apache-2.0",
