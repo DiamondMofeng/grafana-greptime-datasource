@@ -33,6 +33,9 @@ e2e-results/
 
 .eslintcache
 
+# Greptimedb
+greptime/
+
 # Temp
 .github/workflows/ci.yml
 .github/workflows/release.yml
