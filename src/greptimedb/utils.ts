@@ -37,7 +37,7 @@ export function mapGreptimeTypeToGrafana(greptimeType: GreptimeDataTypes): Field
   return greptimeTypeToGrafana[greptimeType];
 }
 
-export function extractDataRows(response: GreptimeResponse): FieldType[][] {
+export function extractDataRows<T extends any[] = any[]>(response: GreptimeResponse<T>): T[] {
   return response.output[0].records.rows;
 }
 
