@@ -1,34 +1,36 @@
 import React from "react";
-import { SegmentInput, SegmentSection, SegmentAsync, SegmentSelect } from "@grafana/ui";
+import { SegmentInput, SegmentSection, SegmentAsync, Segment, InlineLabel } from "@grafana/ui";
 import { RemoveSegmentButton } from "./RemoveSegment";
 import { toSelectableValue } from "utils";
-import { SelectableValue } from "@grafana/data";
+import type { SelectableValue } from "@grafana/data";
+import type { GreptimeQuery } from "types";
+import { css } from "@emotion/css";
 // import { AddSegment } from "./AddSegment";
-
 
 /*
  * The format of WHERE statements should be [column] [operator] [value] [AND|OR]
  * ? How to identify the type of the value? It could be a string, number or boolean
  */
-enum OPERATORS {
-  '=',
-  '!=',
-  '>',
-  '<',
-  '>=',
-  '<=',
-  // 'LIKE',
-}
+
+const OPERATORS = ['=', '!=', '>', '<', '>=', '<='] as const;
+type operatorType = typeof OPERATORS[number];
+
 type valueType = string | number | boolean;
+
 /** The last condition should not have connector */
+const CONNECTORS = ['AND', 'OR'] as const;
 type connectorType = 'AND' | 'OR' | undefined;
 
-export type WhereStatement = [string, OPERATORS, valueType, connectorType];
+export type WhereStatement = [string, operatorType, valueType, connectorType];
+
+const defaultStatement: WhereStatement = ["select column", OPERATORS[0], 'value', 'AND'];
 
 const AddWhereConditionButton = (props: {
   onClick: () => void;
 }) => (
-  <i className="fa fa-plus " onClick={props.onClick} />
+  <InlineLabel className={css({ cursor: 'pointer' })} width={'auto'} onClick={props.onClick}>
+    +
+  </InlineLabel>
 )
 
 /*
@@ -38,14 +40,15 @@ const AddWhereConditionButton = (props: {
 type Props = {
   whereConditions: WhereStatement[];
   handleLoadAllColumns: () => Promise<Array<SelectableValue<string>>>;
-  changeQueryByKey: (key: string, value: any) => void;
+  changeQueryByKey: (key: keyof GreptimeQuery, value: any) => void;
 }
 export const WhereSegment = (props: Props) => {
 
   const { whereConditions, handleLoadAllColumns, changeQueryByKey } = props;
 
+
   const handleClickAddButton = () => {
-    const newWhereConditions = [...whereConditions, ['', OPERATORS['='], '', undefined]];
+    const newWhereConditions = [...whereConditions, defaultStatement];
     changeQueryByKey('whereConditions', newWhereConditions);
   }
 
@@ -61,7 +64,7 @@ export const WhereSegment = (props: Props) => {
   }
 
   const handleChangeOperator = (idx: number) => {
-    return (newVal: SelectableValue<OPERATORS>) => {
+    return (newVal: SelectableValue<operatorType>) => {
       const newWhereConditions = [...whereConditions].map((condition, i) =>
         i === idx
           ? [condition[0], newVal.value, condition[2], condition[3]]
@@ -100,13 +103,17 @@ export const WhereSegment = (props: Props) => {
     }
   }
 
+  // console.log("whereConditions:", whereConditions);
+  const whereConditionsWithPlaceholder: WhereStatement[] = [...whereConditions, defaultStatement]
+  // console.log("with placeholder:", whereConditionsWithPlaceholder)
+
   return (
     <>
-      {(whereConditions.concat([])).map((condition, idx) => {
+      {whereConditionsWithPlaceholder.map((condition, idx) => {
         const [column, op, value, connector] = condition;
         return (
-          <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={condition.toString()} >
-            {idx === whereConditions.length - 1 ? (
+          <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={condition.toString() + idx} >
+            {idx === whereConditionsWithPlaceholder.length - 1 ? (
               <>
                 <AddWhereConditionButton onClick={handleClickAddButton} />
               </>
@@ -119,28 +126,23 @@ export const WhereSegment = (props: Props) => {
                   onChange={handleChangeColumn(idx)}>
                 </SegmentAsync>
                 {/* operator */}
-                <SegmentSelect
+                <Segment
                   value={toSelectableValue(op)}
-                  options={(Object.values(OPERATORS) as OPERATORS[]).map(toSelectableValue)}
-                  onClickOutside={() => { }}
+                  options={OPERATORS.map(toSelectableValue)}
                   onChange={handleChangeOperator(idx)}
-                  width={50}  //TODO
                 />
                 {/* value */}
                 <SegmentInput value={value.toString()} inputPlaceholder={''} onChange={handleChangeValue(idx)} />
                 {/* connector */}
-                <SegmentSelect
+                <Segment
                   value={toSelectableValue(connector)}
-                  options={(['AND', 'OR'] as const).map(toSelectableValue)}
-                  onClickOutside={() => { }}
+                  options={CONNECTORS.map(toSelectableValue)}
                   onChange={handleChangeConnector(idx)}
-                  width={50}
                 />
                 {/* remove */}
                 <RemoveSegmentButton handelRemoveSegment={handleRemoveWhereCondition(idx)} />
               </>
-            )
-            }
+            )}
           </SegmentSection>
         )
       })}
