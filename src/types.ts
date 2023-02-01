@@ -1,4 +1,5 @@
-import { DataQuery, DataSourceJsonData } from '@grafana/data';
+import type { DataQuery, DataSourceJsonData } from '@grafana/data';
+import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSegment';
 
 export interface GreptimeQuery extends DataQuery {
   isRawQuery?: boolean;
@@ -8,15 +9,19 @@ export interface GreptimeQuery extends DataQuery {
   /** Selected column names */
   selectedColumns?: string[];
   /** Where */
-  whereConditions?: string[];
+  whereConditions?: WhereStatement[];
   queryText: string;
 }
 
-export const defaultQuery: Partial<GreptimeQuery> = {
+/**
+ * We should not type this to Partial<GreptimeQuery>, which makes {...defaultQuery} failed to fullfill those optional fields
+ */
+export const defaultQuery = {
   // fromTable: '',
   // timeColumn: '',
   queryText: 'SELECT * FROM numbers LIMIT 5',
   selectedColumns: [],
+  whereConditions: [],
 };
 
 /**

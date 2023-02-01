@@ -1,16 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, } from 'react';
 import type { DataSource } from 'datasource';
 import { FieldType, GrafanaTheme2, QueryEditorProps, SelectableValue } from '@grafana/data';
 import { defaultQuery, GreptimeQuery, GreptimeSourceOptions } from 'types';
-import { InlineLabel, SegmentAsync, SegmentInput, SegmentSection, useStyles2 } from '@grafana/ui';
+import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
-import { defaults } from 'lodash';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
 import { AddSegment } from './AddSegment';
 import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
-import { NonStateSegmentInput } from './NonStateSegmentInput';
 import { toSelectableValue } from 'utils';
+import { WhereSegment } from './WhereSegment';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -19,7 +18,10 @@ export const VisualQueryEditor = (props: Props) => {
   const { datasource, query: oriQuery, onChange, onRunQuery } = props;
   const { client } = datasource;
 
-  const query = defaults(oriQuery, defaultQuery);
+  const query = {
+    ...defaultQuery,
+    ...oriQuery,
+  }
   const { fromTable, timeColumn, selectedColumns: oriSelectedColumns, whereConditions: oriWhereConditions } = query;
 
   const styles = useStyles2(getStyles);
@@ -71,10 +73,10 @@ export const VisualQueryEditor = (props: Props) => {
     return fromTable ? client.queryColumnSchemaOfTable(fromTable) : Promise.resolve([]);
   }, [client, fromTable]);
 
-  // const handleLoadColumnNames = async () => {
-  //   const columns = await getColumnSchema;
-  //   return columns.map((schema) => toOption(schema.name));
-  // };
+  const getColumnNames = useMemo(async () => {
+    const columns = await getColumnSchema;
+    return columns.map((column) => column.name);
+  }, [getColumnSchema]);
 
   const getTimeColumns = useMemo(async () => {
     const columns = await getColumnSchema;
@@ -132,33 +134,33 @@ export const VisualQueryEditor = (props: Props) => {
 
   //* For Where Segment
 
-  const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
+  // const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
 
-  //TODO: this state should not be placed here, as this makes the component rerender frequently.
-  const [newWhereCondition, setNewWhereCondition] = useState('');
+  // //TODO: this state should not be placed here, as this makes the component rerender frequently.
+  // const [newWhereCondition, setNewWhereCondition] = useState('');
 
-  const handleAddWhereCondition = (newCondition: string | number) => {
-    if (newCondition === '') {
-      return;
-    }
-    const newWhereConditions = (oriWhereConditions ?? []).concat([`${newCondition}`]);
-    setNewWhereCondition('');
-    changeQueryByKey('whereConditions', newWhereConditions);
-  };
+  // const handleAddWhereCondition = (newCondition: string | number) => {
+  //   if (newCondition === '') {
+  //     return;
+  //   }
+  //   const newWhereConditions = (oriWhereConditions ?? []).concat([`${newCondition}`]);
+  //   setNewWhereCondition('');
+  //   changeQueryByKey('whereConditions', newWhereConditions);
+  // };
 
-  const handleChangeWhereCondition = (idx: number) => {
-    return (newCondition: string | number) => {
-      const newWhereConditions = (oriWhereConditions ?? []).map((c, i) => (i === idx ? `${newCondition}` : c));
-      changeQueryByKey('whereConditions', newWhereConditions);
-    };
-  };
+  // const handleChangeWhereCondition = (idx: number) => {
+  //   return (newCondition: string | number) => {
+  //     const newWhereConditions = (oriWhereConditions ?? []).map((c, i) => (i === idx ? `${newCondition}` : c));
+  //     changeQueryByKey('whereConditions', newWhereConditions);
+  //   };
+  // };
 
-  const handleRemoveWhereCondition = (idx: number) => {
-    return () => {
-      const newWhereConditions = (oriWhereConditions ?? []).filter((c, i) => i !== idx);
-      changeQueryByKey('whereConditions', newWhereConditions);
-    };
-  };
+  // const handleRemoveWhereCondition = (idx: number) => {
+  //   return () => {
+  //     const newWhereConditions = (oriWhereConditions ?? []).filter((c, i) => i !== idx);
+  //     changeQueryByKey('whereConditions', newWhereConditions);
+  //   };
+  // };
 
   return (
     <>
@@ -196,23 +198,11 @@ export const VisualQueryEditor = (props: Props) => {
           </SegmentSection>
         ))}
         {/* WHERE */}
-        {whereConditions.map((conditionStr, idx) => (
-          <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={idx + conditionStr}>
-            {idx === whereConditions.length - 1 ? (
-              <NonStateSegmentInput
-                placeholder={'+'}
-                value={newWhereCondition}
-                onChange={handleAddWhereCondition}
-                onInputChange={setNewWhereCondition}
-              />
-            ) : (
-              <>
-                <SegmentInput value={conditionStr} inputPlaceholder={''} onChange={handleChangeWhereCondition(idx)} />
-                <RemoveSegmentButton handelRemoveSegment={handleRemoveWhereCondition(idx)} />
-              </>
-            )}
-          </SegmentSection>
-        ))}
+        <WhereSegment
+          whereConditions={oriWhereConditions}
+          handleLoadAllColumns={async () => (await getColumnNames).map(toSelectableValue)}
+          changeQueryByKey={changeQueryByKey}
+        />
         {/* GROUP BY */}
       </div>
     </>
