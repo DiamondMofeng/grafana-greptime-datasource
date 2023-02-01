@@ -38,28 +38,71 @@ const AddWhereConditionButton = (props: {
 type Props = {
   whereConditions: WhereStatement[];
   handleLoadAllColumns: () => Promise<Array<SelectableValue<string>>>;
+  changeQueryByKey: (key: string, value: any) => void;
 }
 export const WhereSegment = (props: Props) => {
 
-  const { whereConditions, handleLoadAllColumns } = props;
+  const { whereConditions, handleLoadAllColumns, changeQueryByKey } = props;
 
   const handleClickAddButton = () => {
-    //TODO
+    const newWhereConditions = [...whereConditions, ['', OPERATORS['='], '', undefined]];
+    changeQueryByKey('whereConditions', newWhereConditions);
+  }
+
+  const handleChangeColumn = (idx: number) => {
+    return (newVal: SelectableValue<string>) => {
+      const newWhereConditions = [...whereConditions].map((condition, i) =>
+        i === idx
+          ? [newVal.value, condition[1], condition[2], condition[3]]
+          : condition
+      );
+      changeQueryByKey('whereConditions', newWhereConditions);
+    }
+  }
+
+  const handleChangeOperator = (idx: number) => {
+    return (newVal: SelectableValue<OPERATORS>) => {
+      const newWhereConditions = [...whereConditions].map((condition, i) =>
+        i === idx
+          ? [condition[0], newVal.value, condition[2], condition[3]]
+          : condition
+      );
+      changeQueryByKey('whereConditions', newWhereConditions);
+    }
   }
 
   const handleChangeValue = (idx: number) => {
-    //TODO
-    return () => { }
+    return (newVal: string | number) => {
+      const newWhereConditions = [...whereConditions].map((condition, i) =>
+        i === idx
+          ? [condition[0], condition[1], newVal, condition[3]]
+          : condition
+      );
+      changeQueryByKey('whereConditions', newWhereConditions);
+    }
+  }
+
+  const handleChangeConnector = (idx: number) => {
+    return (newVal: SelectableValue<connectorType>) => {
+      const newWhereConditions = [...whereConditions].map((condition, i) =>
+        i === idx
+          ? [condition[0], condition[1], condition[2], newVal.value]
+          : condition
+      );
+      changeQueryByKey('whereConditions', newWhereConditions);
+    }
   }
 
   const handleRemoveWhereCondition = (idx: number) => {
-    //TODO
-    return () => { }
+    return () => {
+      const newWhereConditions = [...whereConditions].filter((_, i) => i !== idx);
+      changeQueryByKey('whereConditions', newWhereConditions);
+    }
   }
 
   return (
     <>
-      {whereConditions.map((condition, idx) => {
+      {(whereConditions.concat([])).map((condition, idx) => {
         const [column, op, value, connector] = condition;
         return (
           <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={condition.toString()} >
@@ -73,14 +116,14 @@ export const WhereSegment = (props: Props) => {
                 <SegmentAsync
                   value={toSelectableValue(column)}
                   loadOptions={handleLoadAllColumns}
-                  onChange={() => { }}>
+                  onChange={handleChangeColumn(idx)}>
                 </SegmentAsync>
                 {/* operator */}
                 <SegmentSelect
                   value={toSelectableValue(op)}
-                  options={Object.values(OPERATORS).map(toSelectableValue)}
+                  options={(Object.values(OPERATORS) as OPERATORS[]).map(toSelectableValue)}
                   onClickOutside={() => { }}
-                  onChange={() => { }}
+                  onChange={handleChangeOperator(idx)}
                   width={50}  //TODO
                 />
                 {/* value */}
@@ -88,9 +131,9 @@ export const WhereSegment = (props: Props) => {
                 {/* connector */}
                 <SegmentSelect
                   value={toSelectableValue(connector)}
-                  options={['AND', 'OR'].map(toSelectableValue)}
+                  options={(['AND', 'OR'] as const).map(toSelectableValue)}
                   onClickOutside={() => { }}
-                  onChange={() => { }}
+                  onChange={handleChangeConnector(idx)}
                   width={50}
                 />
                 {/* remove */}
@@ -101,8 +144,6 @@ export const WhereSegment = (props: Props) => {
           </SegmentSection>
         )
       })}
-
-
     </>
   )
 
