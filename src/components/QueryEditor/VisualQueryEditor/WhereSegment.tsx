@@ -15,7 +15,7 @@ import { css } from "@emotion/css";
 const OPERATORS = ['=', '!=', '>', '<', '>=', '<='] as const;
 type operatorType = typeof OPERATORS[number];
 
-type valueType = string | number | boolean;
+type valueType = string | number;
 
 /** The last condition should not have connector */
 const CONNECTORS = ['AND', 'OR'] as const;
@@ -23,7 +23,7 @@ type connectorType = 'AND' | 'OR' | undefined;
 
 export type WhereStatement = [string, operatorType, valueType, connectorType];
 
-const defaultStatement: WhereStatement = ["select column", OPERATORS[0], 'value', 'AND'];
+const defaultStatement: WhereStatement = ["select column", OPERATORS[0], '', 'AND'];
 
 const AddWhereConditionButton = (props: {
   onClick: () => void;
@@ -33,10 +33,6 @@ const AddWhereConditionButton = (props: {
   </InlineLabel>
 )
 
-/*
- * The first line 
- */
-
 type Props = {
   whereConditions: WhereStatement[];
   handleLoadAllColumns: () => Promise<Array<SelectableValue<string>>>;
@@ -45,7 +41,6 @@ type Props = {
 export const WhereSegment = (props: Props) => {
 
   const { whereConditions, handleLoadAllColumns, changeQueryByKey } = props;
-
 
   const handleClickAddButton = () => {
     const newWhereConditions = [...whereConditions, defaultStatement];
@@ -130,15 +125,24 @@ export const WhereSegment = (props: Props) => {
                   value={toSelectableValue(op)}
                   options={OPERATORS.map(toSelectableValue)}
                   onChange={handleChangeOperator(idx)}
+                  inputMinWidth={40}
                 />
                 {/* value */}
-                <SegmentInput value={value.toString()} inputPlaceholder={''} onChange={handleChangeValue(idx)} />
-                {/* connector */}
-                <Segment
-                  value={toSelectableValue(connector)}
-                  options={CONNECTORS.map(toSelectableValue)}
-                  onChange={handleChangeConnector(idx)}
+                <SegmentInput
+                  value={value}
+                  placeholder={'value'}
+                  onChange={handleChangeValue(idx)}
                 />
+                {/* connector */}
+                {
+                  idx < whereConditionsWithPlaceholder.length - 2 && (
+                    <Segment
+                      value={toSelectableValue(connector)}
+                      options={CONNECTORS.map(toSelectableValue)}
+                      onChange={handleChangeConnector(idx)}
+                    />
+                  )
+                }
                 {/* remove */}
                 <RemoveSegmentButton handelRemoveSegment={handleRemoveWhereCondition(idx)} />
               </>
