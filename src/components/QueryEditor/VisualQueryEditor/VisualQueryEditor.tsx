@@ -10,10 +10,9 @@ import { AddSegment } from './AddSegment';
 import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
 import { NonStateSegmentInput } from './NonStateSegmentInput';
+import { toSelectableValue } from 'utils';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
-
-const toOption = (value: string) => ({ label: value, value });
 
 export const VisualQueryEditor = (props: Props) => {
   // const { query, onChange, onRunQuery, datasource, range, data } = props;
@@ -65,7 +64,7 @@ export const VisualQueryEditor = (props: Props) => {
 
   const handleLoadFromTables = async () => {
     const tables = await getAllTables;
-    return tables.map(toOption);
+    return tables.map(toSelectableValue);
   };
 
   const getColumnSchema = useMemo(() => {
@@ -81,7 +80,7 @@ export const VisualQueryEditor = (props: Props) => {
     const columns = await getColumnSchema;
     return columns
       .filter((column) => mapGreptimeTypeToGrafana(column.data_type) === FieldType.time)
-      .map((column) => toOption(column.name));
+      .map((column) => toSelectableValue(column.name));
   }, [getColumnSchema]);
 
   //* For Select Segment
@@ -97,7 +96,7 @@ export const VisualQueryEditor = (props: Props) => {
   }, [getColumnSchema, selectedColumns, timeColumn]);
 
   const handleLoadUnselectedColumns = async () => {
-    return (await unselectedColumnsSchemas).map((column) => toOption(column.name));
+    return (await unselectedColumnsSchemas).map((column) => toSelectableValue(column.name));
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {
@@ -110,7 +109,7 @@ export const VisualQueryEditor = (props: Props) => {
    */
   const handleLoadReselectColumns = (selfVal: string) => {
     return async () => {
-      return [toOption(selfVal)].concat(await handleLoadUnselectedColumns());
+      return [toSelectableValue(selfVal)].concat(await handleLoadUnselectedColumns());
     };
   };
 
