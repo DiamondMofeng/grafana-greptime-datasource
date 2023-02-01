@@ -1,3 +1,1 @@
-import { VisualQueryEditor } from './VisualQueryEditor';
-
-export default VisualQueryEditor;
+export { VisualQueryEditor } from './VisualQueryEditor';

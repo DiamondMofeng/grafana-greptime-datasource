@@ -1,3 +1,1 @@
-import { QueryEditor } from './QueryEditor';
-
-export default QueryEditor;
+export { QueryEditor } from './QueryEditor';

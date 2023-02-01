@@ -3,7 +3,7 @@ import { QueryEditorProps } from '@grafana/data';
 import { DataSource } from '../../datasource';
 import { GreptimeSourceOptions, GreptimeQuery } from '../../types';
 import { RawQueryEditor } from './RawQueryEditor';
-import VisualQueryEditor from './VisualQueryEditor/';
+import { VisualQueryEditor } from './VisualQueryEditor/';
 import { QueryEditorModeSwitcher } from './QueryModeSwitcher';
 import { css } from '@emotion/css';
 
