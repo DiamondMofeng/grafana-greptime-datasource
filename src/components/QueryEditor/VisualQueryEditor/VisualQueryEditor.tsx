@@ -5,10 +5,9 @@ import { defaultQuery, GreptimeQuery, GreptimeSourceOptions } from 'types';
 import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
-import { AddSegment } from './AddSegment';
-import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
 import { toSelectableValue } from 'utils';
+import { SelectSegment } from './SelectSegment';
 import { WhereSegment } from './WhereSegment';
 import { GroupBySegment } from './GroupBySegment';
 
@@ -74,6 +73,10 @@ export const VisualQueryEditor = (props: Props) => {
     return fromTable ? client.queryColumnSchemaOfTable(fromTable) : Promise.resolve([]);
   }, [client, fromTable]);
 
+  const handleLoadColumnSchema = async () => {
+    return await getColumnSchema;
+  };
+
   const getColumnNames = useMemo(async () => {
     const columns = await getColumnSchema;
     return columns.map((column) => column.name);
@@ -85,53 +88,6 @@ export const VisualQueryEditor = (props: Props) => {
       .filter((column) => mapGreptimeTypeToGrafana(column.data_type) === FieldType.time)
       .map((column) => toSelectableValue(column.name));
   }, [getColumnSchema]);
-
-  //* For Select Segment
-
-  const selectedColumnsWithPlaceholder = [...selectedColumns, 'PLACEHOLDER']; //last one is for add button
-
-  /**
-   * GreptimeDB's sql syntax do not allow select same column twice.
-   */
-  const unselectedColumnsSchemas = useMemo(async () => {
-    const columns = await getColumnSchema;
-    return columns.filter((column) => ![...selectedColumns, timeColumn].includes(column.name));
-  }, [getColumnSchema, selectedColumns, timeColumn]);
-
-  const handleLoadUnselectedColumns = async () => {
-    return (await unselectedColumnsSchemas).map((column) => toSelectableValue(column.name));
-  };
-
-  const handleAddColumn = (select: SelectableValue<string>) => {
-    const newSelectedColumns = [...selectedColumns, select.value!];
-    changeQueryByKey('selectedColumns', newSelectedColumns);
-  };
-
-  /**
-   * Should return self value concat other unselected values.
-   */
-  const handleLoadReselectColumns = (selfVal: string) => {
-    return async () => {
-      return [toSelectableValue(selfVal), ... await handleLoadUnselectedColumns()];
-    };
-  };
-
-  /**
-   * Reselect a selected column.
-   */
-  const handleSelectedColumnChange = (columnName: string) => {
-    return (select: SelectableValue<string>) => {
-      const newSelectedColumns = selectedColumns.map((name) => (name === columnName ? select.value! : name));
-      changeQueryByKey('selectedColumns', newSelectedColumns);
-    };
-  };
-
-  const handleRemoveSelectedColumn = (columnName: string) => {
-    return () => {
-      const newSelectedColumns = selectedColumns.filter((name) => name !== columnName);
-      changeQueryByKey('selectedColumns', newSelectedColumns);
-    };
-  };
 
   return (
     <>
@@ -152,22 +108,12 @@ export const VisualQueryEditor = (props: Props) => {
           />
         </SegmentSection>
         {/* SELECT */}
-        {selectedColumnsWithPlaceholder.map((colName, idx) => (
-          <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
-            {idx === selectedColumnsWithPlaceholder.length - 1 ? (
-              <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
-            ) : (
-              <>
-                <SegmentAsync
-                  value={colName}
-                  onChange={handleSelectedColumnChange(colName)}
-                  loadOptions={handleLoadReselectColumns(colName)}
-                />
-                <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(colName)} />
-              </>
-            )}
-          </SegmentSection>
-        ))}
+        <SelectSegment
+          selectedColumns={selectedColumns}
+          timeColumn={timeColumn}
+          changeQueryByKey={changeQueryByKey}
+          onLoadColumnSchema={handleLoadColumnSchema}
+        />
         {/* WHERE */}
         <WhereSegment
           whereConditions={whereConditions}
