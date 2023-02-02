@@ -26,7 +26,7 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   if (query.isRawQuery) {
     return query.queryText;
   }
-  const { fromTable, timeColumn, selectedColumns, whereConditions } = query;
+  const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
   const columns = [...(selectedColumns || []), timeColumn].join(', ');
 
   const select = `SELECT ${columns} `;
@@ -34,10 +34,15 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   const where = whereConditions?.length
     ? `WHERE ${connectWhereConditions(whereConditions)}`
     : '';
+  const groupBy = groupByColumns?.length
+    ? `GROUP BY ${groupByColumns.join(', ')}`
+    : '';
 
   const queryText =
     `${select}
      ${from}
-     ${where}`;
+     ${where}
+     ${groupBy}
+     `;
   return queryText;
 }
