@@ -22,7 +22,7 @@ export const VisualQueryEditor = (props: Props) => {
     ...defaultQuery,
     ...oriQuery,
   }
-  const { fromTable, timeColumn, selectedColumns: oriSelectedColumns, whereConditions: oriWhereConditions } = query;
+  const { fromTable, timeColumn, selectedColumns, whereConditions } = query;
 
   const styles = useStyles2(getStyles);
 
@@ -87,7 +87,7 @@ export const VisualQueryEditor = (props: Props) => {
 
   //* For Select Segment
 
-  const selectedColumns = (oriSelectedColumns ?? []).concat(['foobar']); //last one is for add button
+  const selectedColumnsWithPlaceholder = [...selectedColumns, 'PLACEHOLDER']; //last one is for add button
 
   /**
    * GreptimeDB's sql syntax do not allow select same column twice.
@@ -102,7 +102,7 @@ export const VisualQueryEditor = (props: Props) => {
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {
-    const newSelectedColumns = selectedColumns.slice(0, -1).concat([select.value!]);
+    const newSelectedColumns = [...selectedColumns, select.value!];
     changeQueryByKey('selectedColumns', newSelectedColumns);
   };
 
@@ -111,7 +111,7 @@ export const VisualQueryEditor = (props: Props) => {
    */
   const handleLoadReselectColumns = (selfVal: string) => {
     return async () => {
-      return [toSelectableValue(selfVal)].concat(await handleLoadUnselectedColumns());
+      return [toSelectableValue(selfVal), ... await handleLoadUnselectedColumns()];
     };
   };
 
@@ -120,47 +120,17 @@ export const VisualQueryEditor = (props: Props) => {
    */
   const handleSelectedColumnChange = (columnName: string) => {
     return (select: SelectableValue<string>) => {
-      const newSelectedColumns = (oriSelectedColumns ?? []).map((name) => (name === columnName ? select.value! : name));
+      const newSelectedColumns = selectedColumns.map((name) => (name === columnName ? select.value! : name));
       changeQueryByKey('selectedColumns', newSelectedColumns);
     };
   };
 
   const handleRemoveSelectedColumn = (columnName: string) => {
     return () => {
-      const newSelectedColumns = (oriSelectedColumns ?? []).filter((name) => name !== columnName);
+      const newSelectedColumns = selectedColumns.filter((name) => name !== columnName);
       changeQueryByKey('selectedColumns', newSelectedColumns);
     };
   };
-
-  //* For Where Segment
-
-  // const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
-
-  // //TODO: this state should not be placed here, as this makes the component rerender frequently.
-  // const [newWhereCondition, setNewWhereCondition] = useState('');
-
-  // const handleAddWhereCondition = (newCondition: string | number) => {
-  //   if (newCondition === '') {
-  //     return;
-  //   }
-  //   const newWhereConditions = (oriWhereConditions ?? []).concat([`${newCondition}`]);
-  //   setNewWhereCondition('');
-  //   changeQueryByKey('whereConditions', newWhereConditions);
-  // };
-
-  // const handleChangeWhereCondition = (idx: number) => {
-  //   return (newCondition: string | number) => {
-  //     const newWhereConditions = (oriWhereConditions ?? []).map((c, i) => (i === idx ? `${newCondition}` : c));
-  //     changeQueryByKey('whereConditions', newWhereConditions);
-  //   };
-  // };
-
-  // const handleRemoveWhereCondition = (idx: number) => {
-  //   return () => {
-  //     const newWhereConditions = (oriWhereConditions ?? []).filter((c, i) => i !== idx);
-  //     changeQueryByKey('whereConditions', newWhereConditions);
-  //   };
-  // };
 
   return (
     <>
@@ -181,9 +151,9 @@ export const VisualQueryEditor = (props: Props) => {
           />
         </SegmentSection>
         {/* SELECT */}
-        {selectedColumns.map((colName, idx) => (
+        {selectedColumnsWithPlaceholder.map((colName, idx) => (
           <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
-            {idx === selectedColumns.length - 1 ? (
+            {idx === selectedColumnsWithPlaceholder.length - 1 ? (
               <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
             ) : (
               <>
@@ -199,7 +169,7 @@ export const VisualQueryEditor = (props: Props) => {
         ))}
         {/* WHERE */}
         <WhereSegment
-          whereConditions={oriWhereConditions}
+          whereConditions={whereConditions}
           handleLoadAllColumns={async () => (await getColumnNames).map(toSelectableValue)}
           changeQueryByKey={changeQueryByKey}
         />
