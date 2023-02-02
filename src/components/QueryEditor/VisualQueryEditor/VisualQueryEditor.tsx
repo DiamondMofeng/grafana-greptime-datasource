@@ -38,7 +38,7 @@ export const VisualQueryEditor = (props: Props) => {
     onRunQuery();
   };
 
-  const changeQueryByKey = (key: keyof GreptimeQuery, value: any) => {
+  const changeQueryByKey = <T extends keyof GreptimeQuery>(key: T, value: GreptimeQuery[T]) => {
     const newQuery = { ...query, [key]: value };
     onChange(newQuery);
     onUpdateQuery(newQuery);

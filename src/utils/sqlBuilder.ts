@@ -1,3 +1,4 @@
+import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSegment';
 import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSegment';
 import type { DataSource } from 'datasource';
 import type { GreptimeQuery } from 'types';
@@ -5,6 +6,28 @@ import type { GreptimeQuery } from 'types';
 /**
  * Build the query from the variables selected visual query builder
  */
+
+// TODO should return '*' if no select statements?
+export function processSelectStatements(selectStatements: SelectStatement[] | undefined): string {
+  if (!selectStatements) {
+    return '*';
+  }
+
+  return selectStatements.map((stmt) => {
+    let res = `${stmt.column}`
+
+    if (stmt.aggregation) {
+      res = `${stmt.aggregation}(${res})`
+    }
+
+    if (stmt.alias) {
+      res += ` AS ${stmt.alias}`
+    }
+
+    return res;
+
+  }).join(', ');
+}
 
 export function connectWhereConditions(
   whereConditions: WhereStatement[] | undefined,
@@ -27,9 +50,8 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
     return query.queryText;
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
-  const columns = [...(selectedColumns || []), timeColumn].join(', ');
 
-  const select = `SELECT ${columns} `;
+  const select = `SELECT ${processSelectStatements(selectedColumns)}, ${timeColumn} `;
   const from = `FROM ${fromTable} `;
   const where = whereConditions?.length
     ? `WHERE ${connectWhereConditions(whereConditions)}`

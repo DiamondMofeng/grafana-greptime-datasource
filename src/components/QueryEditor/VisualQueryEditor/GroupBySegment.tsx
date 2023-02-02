@@ -6,10 +6,11 @@ import { toSelectableValue } from "utils";
 import { SelectableValue } from "@grafana/data";
 import { AddSegment } from "./AddSegment";
 import { RemoveSegmentButton } from "./RemoveSegment";
+import { SelectStatement } from "./SelectSegment";
 
 type Props = {
   groupByColumns: string[];
-  selectedColumns: string[];
+  selectedColumns: SelectStatement[];
   changeQueryByKey: (key: keyof GreptimeQuery, value: any) => void;
 }
 
@@ -18,8 +19,8 @@ export const GroupBySegment = (props: Props) => {
 
   const handleLoadAddableColumns = () => {
     return selectedColumns
-      .filter(col => !groupByColumns.includes(col))
-      .map(toSelectableValue);
+      .filter(stmt => !groupByColumns.includes(stmt.column))
+      .map((stmt) => toSelectableValue(stmt.column));
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {

@@ -1,4 +1,5 @@
 import type { DataQuery, DataSourceJsonData } from '@grafana/data';
+import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSegment';
 import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSegment';
 
 export interface GreptimeQuery extends DataQuery {
@@ -6,8 +7,8 @@ export interface GreptimeQuery extends DataQuery {
   /** Table to query from */
   fromTable?: string;
   timeColumn?: string;
-  /** Selected column names */
-  selectedColumns?: string[];
+  /** Selected [column, aggregate, alias] */
+  selectedColumns?: SelectStatement[];
   /** Where */
   whereConditions?: WhereStatement[];
   /** Group by */

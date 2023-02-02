@@ -7,10 +7,16 @@ import { SegmentAsync, SegmentSection } from "@grafana/ui";
 import { AddSegment } from "./AddSegment";
 import { RemoveSegmentButton } from "./RemoveSegment";
 
+export type SelectStatement = {
+  column: string;
+  aggregation?: string;
+  alias?: string;
+};
+
 type Props = {
-  selectedColumns: string[];
+  selectedColumns: SelectStatement[];
   timeColumn: string | undefined;
-  changeQueryByKey: (key: keyof GreptimeQuery, value: any) => void;
+  changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 
   onLoadColumnSchema: () => Promise<GreptimeColumnSchema[]>;
 }
@@ -29,7 +35,7 @@ export const SelectSegment = (props: Props) => {
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {
-    const newSelectedColumns = [...selectedColumns, select.value!];
+    const newSelectedColumns = [...selectedColumns, { column: select.value! }];
     changeQueryByKey('selectedColumns', newSelectedColumns);
   };
 
@@ -45,36 +51,44 @@ export const SelectSegment = (props: Props) => {
   /**
    * Reselect a selected column.
    */
-  const handleSelectedColumnChange = (columnName: string) => {
+  const handleReselectColumn = (idx: number) => {
     return (select: SelectableValue<string>) => {
-      const newSelectedColumns = selectedColumns.map((name) => (name === columnName ? select.value! : name));
+      const newSelectedColumns = selectedColumns.map((stmt, i) =>
+        i === idx
+          ? { ...stmt, column: select.value! }
+          : stmt
+      );
       changeQueryByKey('selectedColumns', newSelectedColumns);
     };
   };
 
-  const handleRemoveSelectedColumn = (columnName: string) => {
+  const handleRemoveSelectedColumn = (idx: number) => {
     return () => {
-      const newSelectedColumns = selectedColumns.filter((name) => name !== columnName);
+      const newSelectedColumns = selectedColumns.filter((_, i) => i !== idx);
       changeQueryByKey('selectedColumns', newSelectedColumns);
     };
   };
 
-  const selectedColumnsWithPlaceholder = [...selectedColumns, 'PLACEHOLDER']; //last one is for add button
+  const defaultStmt = { column: '', aggregation: '', alias: '' };
+
+  const selectedColumnsWithPlaceholder = [...selectedColumns, defaultStmt]; //last one is for add button
 
   return (
     <>
-      {selectedColumnsWithPlaceholder.map((colName, idx) => (
-        <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
+      {selectedColumnsWithPlaceholder.map((stmt, idx) => (
+        <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={stmt.column}>
           {idx === selectedColumnsWithPlaceholder.length - 1 ? (
-            <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
+            <AddSegment
+              loadOptions={handleLoadUnselectedColumns}
+              onChange={handleAddColumn} />
           ) : (
             <>
               <SegmentAsync
-                value={colName}
-                onChange={handleSelectedColumnChange(colName)}
-                loadOptions={handleLoadReselectColumns(colName)}
+                value={stmt.column}
+                onChange={handleReselectColumn(idx)}
+                loadOptions={handleLoadReselectColumns(stmt.column)}
               />
-              <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(colName)} />
+              <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(idx)} />
             </>
           )}
         </SegmentSection>
