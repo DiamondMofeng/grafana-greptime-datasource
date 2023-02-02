@@ -16,7 +16,7 @@ type Props = {
 export const GroupBySegment = (props: Props) => {
   const { groupByColumns, changeQueryByKey, selectedColumns } = props;
 
-  const handleLoadAddableColumns = async () => {
+  const handleLoadAddableColumns = () => {
     return selectedColumns
       .filter(col => !groupByColumns.includes(col))
       .map(toSelectableValue);
@@ -54,7 +54,7 @@ export const GroupBySegment = (props: Props) => {
           <>
             <AddSegment
               key={idx}
-              loadOptions={handleLoadAddableColumns}
+              loadOptions={async () => handleLoadAddableColumns()}
               onChange={handleAddColumn}
             />
           </>
@@ -63,7 +63,7 @@ export const GroupBySegment = (props: Props) => {
             <Segment
               key={idx}
               value={toSelectableValue(col)}
-              options={selectedColumns.filter(c => c !== col).map(toSelectableValue)}
+              options={[...handleLoadAddableColumns(), toSelectableValue(col)]}
               onChange={handleReselectColumn(idx)}
             />
             <RemoveSegmentButton
