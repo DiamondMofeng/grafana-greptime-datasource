@@ -21,7 +21,11 @@ type valueType = string | number;
 const CONNECTORS = ['AND', 'OR'] as const;
 type connectorType = 'AND' | 'OR' | undefined;
 
-export type WhereStatement = [string, operatorType, valueType, connectorType];
+/**
+ * In case someday we have to get rid of the readonly modifier,
+ * We could use a function Tuple to narrowing the tuples in `handle...` functions
+ */
+export type WhereStatement = Readonly<[string, operatorType, valueType, connectorType]>;
 
 const defaultStatement: WhereStatement = ["select column", OPERATORS[0], '', 'AND'];
 
@@ -36,7 +40,7 @@ const AddWhereConditionButton = (props: {
 type Props = {
   whereConditions: WhereStatement[];
   handleLoadAllColumns: () => Promise<Array<SelectableValue<string>>>;
-  changeQueryByKey: (key: keyof GreptimeQuery, value: any) => void;
+  changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
 export const WhereSegment = (props: Props) => {
 
@@ -48,21 +52,27 @@ export const WhereSegment = (props: Props) => {
   }
 
   const handleChangeColumn = (idx: number) => {
-    return (newVal: SelectableValue<string>) => {
-      const newWhereConditions = [...whereConditions].map((condition, i) =>
-        i === idx
-          ? [newVal.value, condition[1], condition[2], condition[3]]
+    return (select: SelectableValue<string>) => {
+      const newWhereConditions = whereConditions.map((condition, i) => {
+        return i === idx
+          ? [select.value!, condition[1], condition[2], condition[3]] as const
           : condition
-      );
+      });
+
+
+
+
+
+
       changeQueryByKey('whereConditions', newWhereConditions);
     }
   }
 
   const handleChangeOperator = (idx: number) => {
-    return (newVal: SelectableValue<operatorType>) => {
-      const newWhereConditions = [...whereConditions].map((condition, i) =>
+    return (select: SelectableValue<operatorType>) => {
+      const newWhereConditions = whereConditions.map((condition, i) =>
         i === idx
-          ? [condition[0], newVal.value, condition[2], condition[3]]
+          ? [condition[0], select.value!, condition[2], condition[3]] as const
           : condition
       );
       changeQueryByKey('whereConditions', newWhereConditions);
@@ -73,7 +83,7 @@ export const WhereSegment = (props: Props) => {
     return (newVal: string | number) => {
       const newWhereConditions = [...whereConditions].map((condition, i) =>
         i === idx
-          ? [condition[0], condition[1], newVal, condition[3]]
+          ? [condition[0], condition[1], newVal!, condition[3]] as const
           : condition
       );
       changeQueryByKey('whereConditions', newWhereConditions);
@@ -84,7 +94,7 @@ export const WhereSegment = (props: Props) => {
     return (newVal: SelectableValue<connectorType>) => {
       const newWhereConditions = [...whereConditions].map((condition, i) =>
         i === idx
-          ? [condition[0], condition[1], condition[2], newVal.value]
+          ? [condition[0], condition[1], condition[2], newVal.value!] as const
           : condition
       );
       changeQueryByKey('whereConditions', newWhereConditions);

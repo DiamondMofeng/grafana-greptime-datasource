@@ -11,7 +11,7 @@ import { SelectStatement } from "./SelectSegment";
 type Props = {
   groupByColumns: string[];
   selectedColumns: SelectStatement[];
-  changeQueryByKey: (key: keyof GreptimeQuery, value: any) => void;
+  changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
 
 export const GroupBySegment = (props: Props) => {
@@ -32,7 +32,7 @@ export const GroupBySegment = (props: Props) => {
     return (select: SelectableValue<string>) => {
       const newSelectedColumns = groupByColumns.map((col, i) =>
         i === idx
-          ? select.value
+          ? select.value!
           : col
       )
       changeQueryByKey('groupByColumns', newSelectedColumns);
