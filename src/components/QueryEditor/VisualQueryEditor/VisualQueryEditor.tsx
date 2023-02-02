@@ -10,6 +10,7 @@ import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
 import { toSelectableValue } from 'utils';
 import { WhereSegment } from './WhereSegment';
+import { GroupBySegment } from './GroupBySegment';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -22,7 +23,7 @@ export const VisualQueryEditor = (props: Props) => {
     ...defaultQuery,
     ...oriQuery,
   }
-  const { fromTable, timeColumn, selectedColumns, whereConditions } = query;
+  const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
   const styles = useStyles2(getStyles);
 
@@ -174,6 +175,11 @@ export const VisualQueryEditor = (props: Props) => {
           changeQueryByKey={changeQueryByKey}
         />
         {/* GROUP BY */}
+        <GroupBySegment
+          groupByColumns={groupByColumns}
+          selectedColumns={selectedColumns}
+          changeQueryByKey={changeQueryByKey}
+        />
       </div>
     </>
   );

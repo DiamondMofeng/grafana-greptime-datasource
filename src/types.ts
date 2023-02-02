@@ -10,6 +10,9 @@ export interface GreptimeQuery extends DataQuery {
   selectedColumns?: string[];
   /** Where */
   whereConditions?: WhereStatement[];
+  /** Group by */
+  groupByColumns?: string[];
+
   queryText: string;
 }
 
@@ -22,6 +25,7 @@ export const defaultQuery = {
   queryText: 'SELECT * FROM numbers LIMIT 5',
   selectedColumns: [],
   whereConditions: [],
+  groupByColumns: [],
 };
 
 /**
