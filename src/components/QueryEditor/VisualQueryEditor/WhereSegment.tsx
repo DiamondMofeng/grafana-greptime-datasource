@@ -1,6 +1,6 @@
 import React from "react";
 import { SegmentInput, SegmentSection, SegmentAsync, Segment, InlineLabel } from "@grafana/ui";
-import { RemoveSegmentButton } from "./RemoveSegment";
+import { RemoveablePopover } from "./RemoveablePopover";
 import { toSelectableValue } from "utils";
 import type { SelectableValue } from "@grafana/data";
 import type { GreptimeQuery } from "types";
@@ -125,11 +125,13 @@ export const WhereSegment = (props: Props) => {
             ) : (
               <>
                 {/* column name */}
-                <SegmentAsync
-                  value={toSelectableValue(column)}
-                  loadOptions={handleLoadAllColumns}
-                  onChange={handleChangeColumn(idx)}>
-                </SegmentAsync>
+                <RemoveablePopover onRemove={handleRemoveWhereCondition(idx)}>
+                  <SegmentAsync
+                    value={toSelectableValue(column)}
+                    loadOptions={handleLoadAllColumns}
+                    onChange={handleChangeColumn(idx)}>
+                  </SegmentAsync>
+                </RemoveablePopover>
                 {/* operator */}
                 <Segment
                   value={toSelectableValue(op)}
@@ -153,8 +155,6 @@ export const WhereSegment = (props: Props) => {
                     />
                   )
                 }
-                {/* remove */}
-                <RemoveSegmentButton handelRemoveSegment={handleRemoveWhereCondition(idx)} />
               </>
             )}
           </SegmentSection>

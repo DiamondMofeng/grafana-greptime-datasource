@@ -5,8 +5,8 @@ import { GreptimeQuery } from "types";
 import { toSelectableValue } from "utils";
 import { SelectableValue } from "@grafana/data";
 import { AddSegment } from "./AddSegment";
-import { RemoveSegmentButton } from "./RemoveSegment";
 import { SelectStatement } from "./SelectSegment";
+import { RemoveablePopover } from "./RemoveablePopover";
 
 type Props = {
   groupByColumns: string[];
@@ -61,15 +61,14 @@ export const GroupBySegment = (props: Props) => {
           </>
         ) : (
           <>
-            <Segment
-              key={idx}
-              value={toSelectableValue(col)}
-              options={[...handleLoadAddableColumns(), toSelectableValue(col)]}
-              onChange={handleReselectColumn(idx)}
-            />
-            <RemoveSegmentButton
-              handelRemoveSegment={handleRemoveColumn(idx)}
-            />
+            <RemoveablePopover onRemove={handleRemoveColumn(idx)}>
+              <Segment
+                key={idx}
+                value={toSelectableValue(col)}
+                options={[...handleLoadAddableColumns(), toSelectableValue(col)]}
+                onChange={handleReselectColumn(idx)}
+              />
+            </RemoveablePopover>
           </>
         )
       ))}

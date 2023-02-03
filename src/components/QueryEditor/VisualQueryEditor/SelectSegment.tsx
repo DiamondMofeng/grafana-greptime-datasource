@@ -5,7 +5,7 @@ import type { SelectableValue } from "@grafana/data";
 import { toSelectableValue } from "utils";
 import { SegmentAsync, SegmentSection } from "@grafana/ui";
 import { AddSegment } from "./AddSegment";
-import { RemoveSegmentButton } from "./RemoveSegment";
+import { RemoveablePopover } from "./RemoveablePopover";
 
 export type SelectStatement = {
   column: string;
@@ -75,7 +75,7 @@ export const SelectSegment = (props: Props) => {
     };
   };
 
-  const defaultStmt = { column: '', aggregation: '', alias: '' };
+  const defaultStmt = { column: '' };
 
   const selectStatementsWithPlaceholder = [...selectStatements, defaultStmt]; //last one is for add button
 
@@ -84,18 +84,21 @@ export const SelectSegment = (props: Props) => {
       {selectStatementsWithPlaceholder.map((stmt, idx) => (
         <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={stmt.column}>
           {idx === selectStatementsWithPlaceholder.length - 1 ? (
-            <AddSegment
-              loadOptions={handleLoadUnselectedColumns}
-              onChange={handleAddColumn}
-            />
+            <>
+              <AddSegment
+                loadOptions={handleLoadUnselectedColumns}
+                onChange={handleAddColumn}
+              />
+            </>
           ) : (
             <>
-              <SegmentAsync
-                value={stmt.column}
-                onChange={handleReselectColumn(idx)}
-                loadOptions={handleLoadReselectColumns(stmt.column)}
-              />
-              <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(idx)} />
+              <RemoveablePopover onRemove={handleRemoveSelectedColumn(idx)}>
+                <SegmentAsync
+                  value={stmt.column}
+                  onChange={handleReselectColumn(idx)}
+                  loadOptions={handleLoadReselectColumns(stmt.column)}
+                />
+              </RemoveablePopover>
             </>
           )}
         </SegmentSection>
