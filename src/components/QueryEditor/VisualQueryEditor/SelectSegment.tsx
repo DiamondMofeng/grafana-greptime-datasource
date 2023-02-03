@@ -23,20 +23,26 @@ type Props = {
 
 export const SelectSegment = (props: Props) => {
 
-  const { selectedColumns, timeColumn, changeQueryByKey, onLoadColumnSchema } = props;
+  const { selectedColumns: selectStatements, timeColumn, changeQueryByKey, onLoadColumnSchema } = props;
 
   /**
-   * GreptimeDB's sql syntax do not allow select same column twice.
+   * It would cause error if the there are same column names in the output
    */
   const handleLoadUnselectedColumns = async () => {
+
+    //TODO Consider allowing add all columns and add an tip when users try to add repeated columns.
+    //TODO Aggregation function is ignored while it counts.
+    const selectedColumns = selectStatements.map((stmt) => stmt.alias ?? stmt.column)
+
     return (await onLoadColumnSchema())
-      .filter((column) => ![timeColumn, ...selectedColumns].includes(column.name))
-      .map((column) => toSelectableValue(column.name));
+      .map((schema) => schema.name)
+      .filter((column) => ![timeColumn, ...selectedColumns].includes(column))
+      .map((column) => toSelectableValue(column));
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {
-    const newSelectedColumns = [...selectedColumns, { column: select.value! }];
-    changeQueryByKey('selectedColumns', newSelectedColumns);
+    const newSelectStatements = [...selectStatements, { column: select.value! }];
+    changeQueryByKey('selectedColumns', newSelectStatements);
   };
 
   /**
@@ -53,34 +59,35 @@ export const SelectSegment = (props: Props) => {
    */
   const handleReselectColumn = (idx: number) => {
     return (select: SelectableValue<string>) => {
-      const newSelectedColumns = selectedColumns.map((stmt, i) =>
+      const newSelectStatements = selectStatements.map((stmt, i) =>
         i === idx
           ? { ...stmt, column: select.value! }
           : stmt
       );
-      changeQueryByKey('selectedColumns', newSelectedColumns);
+      changeQueryByKey('selectedColumns', newSelectStatements);
     };
   };
 
   const handleRemoveSelectedColumn = (idx: number) => {
     return () => {
-      const newSelectedColumns = selectedColumns.filter((_, i) => i !== idx);
-      changeQueryByKey('selectedColumns', newSelectedColumns);
+      const newSelectStatements = selectStatements.filter((_, i) => i !== idx);
+      changeQueryByKey('selectedColumns', newSelectStatements);
     };
   };
 
   const defaultStmt = { column: '', aggregation: '', alias: '' };
 
-  const selectedColumnsWithPlaceholder = [...selectedColumns, defaultStmt]; //last one is for add button
+  const selectStatementsWithPlaceholder = [...selectStatements, defaultStmt]; //last one is for add button
 
   return (
     <>
-      {selectedColumnsWithPlaceholder.map((stmt, idx) => (
+      {selectStatementsWithPlaceholder.map((stmt, idx) => (
         <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={stmt.column}>
-          {idx === selectedColumnsWithPlaceholder.length - 1 ? (
+          {idx === selectStatementsWithPlaceholder.length - 1 ? (
             <AddSegment
               loadOptions={handleLoadUnselectedColumns}
-              onChange={handleAddColumn} />
+              onChange={handleAddColumn}
+            />
           ) : (
             <>
               <SegmentAsync
