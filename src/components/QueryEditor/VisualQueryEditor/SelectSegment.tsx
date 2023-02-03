@@ -9,9 +9,17 @@ import { RemoveablePopover } from "./RemoveablePopover";
 
 export type SelectStatement = {
   column: string;
-  aggregation?: string;
+  /** 
+   * Assuming the functions are executed in order   
+   * [sum, avg] => avg(sum(column))
+   */
+  aggregations?: Aggregation[];  //TODO maybe we need a map to auto detect conflicted functions.
   alias?: string;
 };
+
+const availableAggregations = ['sum', 'avg', 'max', 'min', 'count'] as const;   //TODO maybe we should manage this in a better way.
+
+type Aggregation = typeof availableAggregations[number];
 
 type Props = {
   selectedColumns: SelectStatement[];

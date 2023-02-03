@@ -16,8 +16,8 @@ export function processSelectStatements(selectStatements: SelectStatement[] | un
   return selectStatements.map((stmt) => {
     let res = `${stmt.column}`
 
-    if (stmt.aggregation) {
-      res = `${stmt.aggregation}(${res})`
+    if (stmt.aggregations?.length) {
+      res = stmt.aggregations.reduce((acc, fn) => `${fn}(${acc})`, res);
     }
 
     if (stmt.alias) {
