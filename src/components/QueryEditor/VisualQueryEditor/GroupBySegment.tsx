@@ -10,17 +10,28 @@ import { RemoveablePopover } from "./RemoveablePopover";
 
 type Props = {
   groupByColumns: string[];
-  selectedColumns: SelectStatement[];
+  selectStatements: SelectStatement[];
+  timeColumn: string | undefined;
   changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
 
 export const GroupBySegment = (props: Props) => {
-  const { groupByColumns, changeQueryByKey, selectedColumns } = props;
+  const { groupByColumns, changeQueryByKey, selectStatements, timeColumn } = props;
 
   const handleLoadAddableColumns = () => {
-    return selectedColumns
-      .filter(stmt => !groupByColumns.includes(stmt.column))
-      .map((stmt) => toSelectableValue(stmt.column));
+
+    const selectedColumns = selectStatements
+      .map((stmt) => stmt.column)
+
+    //TODO so ugly
+    return (
+      timeColumn
+        ? [...selectedColumns, timeColumn]
+        : selectedColumns
+    )
+      .filter(col => !groupByColumns.includes(col))
+      .map((col) => toSelectableValue(col));
+
   };
 
   const handleAddColumn = (select: SelectableValue<string>) => {

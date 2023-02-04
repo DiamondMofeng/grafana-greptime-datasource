@@ -123,7 +123,8 @@ export const VisualQueryEditor = (props: Props) => {
         {/* GROUP BY */}
         <GroupBySegment
           groupByColumns={groupByColumns}
-          selectedColumns={selectedColumns}
+          selectStatements={selectedColumns}
+          timeColumn={timeColumn}
           changeQueryByKey={changeQueryByKey}
         />
       </div>
