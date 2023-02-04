@@ -6,6 +6,9 @@ type Props = {
   children: JSX.Element,
 }
 
+/**
+ * TODO: Currently only support warpping one component.
+ */
 export const RemoveablePopover = (props: Props) => {
 
   const { children, onRemove } = props;
