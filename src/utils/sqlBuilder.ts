@@ -16,8 +16,21 @@ export function processSelectStatements(selectStatements: SelectStatement[] | un
   return selectStatements.map((stmt) => {
     let res = `${stmt.column}`
 
-    if (stmt.aggregations?.length) {
-      res = stmt.aggregations.reduce((acc, fn) => `${fn}(${acc})`, res);
+    if (stmt.addons?.length) {
+      res = stmt.addons.reduce((expr, addon, idx, addons) => {
+        switch (addon.type) {
+          case 'function':
+            return `${addon.function}(${expr})`;
+          case 'operator':
+            // we do not need to wrap the expression in parentheses if the next addon is a function
+            return addons[idx + 1]?.type === 'function'
+              ? `${expr} ${addon.operator} ${addon.param}`
+              : `(${expr} ${addon.operator} ${addon.param})`;
+          default:
+            console.log('Received unexpected addon type:', addon)
+            return expr;
+        }
+      }, res)
     }
 
     if (stmt.alias) {

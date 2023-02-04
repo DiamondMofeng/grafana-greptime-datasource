@@ -9,17 +9,35 @@ import { RemoveablePopover } from "./RemoveablePopover";
 
 export type SelectStatement = {
   column: string;
+
   /** 
-   * Assuming the functions are executed in order   
-   * [sum, avg] => avg(sum(column))
+   * Assuming that these addons are applied to the column name in order.
+   * @example [{sum}, {+ 1} , {/ 2}] => (sum(column) + 1) / 2
    */
-  aggregations?: Aggregation[];  //TODO maybe we need a map to auto detect conflicted functions.
+  addons?: Array<FunctionAddon | OperatorAddon>
   alias?: string;
 };
 
-const availableAggregations = ['sum', 'avg', 'max', 'min', 'count'] as const;   //TODO maybe we should manage this in a better way.
+const availableOperators = ['+', '-', '*', '/'] as const;
 
-type Aggregation = typeof availableAggregations[number];
+type Operator = typeof availableOperators[number];
+
+type OperatorAddon = {
+  type: 'operator';
+  operator: Operator;
+  param: string;
+}
+
+const availableAggregations = ['sum', 'avg', 'max', 'min', 'count', 'distinct'] as const;   //TODO maybe we should manage this in a better way.
+
+type Fn = typeof availableAggregations[number]; //TODO give this a better name
+
+type FunctionAddon = {
+  type: 'function';
+  function: Fn;
+}
+
+// ===================== component =====================
 
 type Props = {
   selectedColumns: SelectStatement[];

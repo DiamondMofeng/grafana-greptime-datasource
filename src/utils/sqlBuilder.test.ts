@@ -6,61 +6,123 @@ import {
 } from "./sqlBuilder"
 
 describe("select statement", () => {
-    it('without agregation and alias', () => {
-        const conditions: SelectStatement[] = [
-            { column: 'a', },
-            { column: 'b', },
-            { column: 'd', },
-            { column: 'c', },
+
+    it('should be processed correctly with alias', () => {
+        const selectStatements: SelectStatement[] = [
+            {
+                column: 'a',
+                alias: 'b'
+            },
+            {
+                column: 'c',
+                alias: 'd'
+            }
         ]
-        const result = processSelectStatements(conditions)
+        const result = processSelectStatements(selectStatements)
 
         expect(result).toBe(
-            `a, b, d, c`
+            `a AS b, c AS d`
         )
     })
 
-    it('with single agregation', () => {
-        const conditions: SelectStatement[] = [
-            { column: 'a', aggregations: ['sum'] },
-            { column: 'b', aggregations: ['count'] },
-            { column: 'd', aggregations: ['avg'] },
-            { column: 'c', aggregations: ['max'] },
+    it('should be processed correctly', () => {
+        const selectStatements: SelectStatement[] = [
+            {
+                column: 'a',
+                addons: [
+                    {
+                        type: 'function',
+                        function: 'sum'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '+',
+                        param: '1'
+                    }
+                ],
+                alias: 'b'
+            },
+            {
+                column: 'c',
+                addons: [
+                    {
+                        type: 'function',
+                        function: 'sum'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '+',
+                        param: '1'
+                    }
+                ],
+                alias: 'd'
+            }
         ]
-        const result = processSelectStatements(conditions)
+        const result = processSelectStatements(selectStatements)
 
         expect(result).toBe(
-            `sum(a), count(b), avg(d), max(c)`
+            `(sum(a) + 1) AS b, (sum(c) + 1) AS d`
         )
     })
 
-    it('with single agregation and alias', () => {
-        const conditions: SelectStatement[] = [
-            { column: 'a', aggregations: ['sum'], alias: 'a' },
-            { column: 'b', aggregations: ['count'], alias: 'b' },
-            { column: 'd', aggregations: ['avg'], alias: 'd' },
-            { column: 'c', aggregations: ['max'], alias: 'c' },
+    it('addons should be added in order', () => {
+        const selectStatements: SelectStatement[] = [
+            {
+                column: 'a',
+                addons: [
+                    {
+                        type: 'function',
+                        function: 'distinct'
+                    },
+                    {
+                        type: 'function',
+                        function: 'sum'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '+',
+                        param: '1'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '*',
+                        param: '2'
+                    }
+                ],
+                alias: 'b'
+            },
+            {
+                column: 'c',
+                addons: [
+                    {
+                        type: 'function',
+                        function: 'distinct'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '*',
+                        param: '3'
+                    },
+                    {
+                        type: 'operator',
+                        operator: '+',
+                        param: '1'
+                    },
+                    {
+                        type: 'function',
+                        function: 'sum'
+                    }
+                ],
+                alias: 'd'
+            }
         ]
-        const result = processSelectStatements(conditions)
+        const result = processSelectStatements(selectStatements)
 
         expect(result).toBe(
-            `sum(a) AS a, count(b) AS b, avg(d) AS d, max(c) AS c`
+            `((sum(distinct(a)) + 1) * 2) AS b, sum((distinct(c) * 3) + 1) AS d`
         )
     })
 
-    it('with multiple agregation', () => {
-        const conditions: SelectStatement[] = [
-            { column: 'a', aggregations: ['sum', 'count'] },
-            { column: 'b', aggregations: ['count', 'avg'] },
-            { column: 'd', aggregations: ['avg', 'max'] },
-            { column: 'c', aggregations: ['max', 'sum'] },
-        ]
-        const result = processSelectStatements(conditions)
-
-        expect(result).toBe(
-            `count(sum(a)), avg(count(b)), max(avg(d)), sum(max(c))`
-        )
-    })
 
 })
 
