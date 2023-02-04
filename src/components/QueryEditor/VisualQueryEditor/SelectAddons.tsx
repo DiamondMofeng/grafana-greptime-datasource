@@ -10,6 +10,7 @@ import type { SelectStatement } from "./SelectSegment";
 import { InlineLabel, SegmentInput, useStyles2 } from "@grafana/ui";
 import { css } from "@emotion/css";
 import { AddSegment } from "./AddSegment";
+import { RemoveablePopover } from "./RemoveablePopover";
 
 export type Addon = FunctionAddon | OperatorAddon;
 
@@ -70,7 +71,7 @@ const addonOptions: Array<
 type Props = {
   selectStatement: SelectStatement
   onChangeAddons: (newAddons: Addon[]) => void;
-  onChangeAlias: (newAlias: string) => void;
+  onChangeAlias: (newAlias: string | undefined) => void;
 };
 
 export const SelectAddons = (props: Props) => {
@@ -83,6 +84,14 @@ export const SelectAddons = (props: Props) => {
 
   const handleAddAlias = () => {
     onChangeAlias('alias');
+  }
+
+  const handleRemoveAlias = () => {
+    onChangeAlias(undefined);
+  }
+
+  const handleChangeAlias = (text: string | number) => {
+    onChangeAlias(String(text));
   }
 
   const handleMassAdd = (select: SelectableValue<Addon | { type: 'alias' }>) => {
@@ -123,12 +132,15 @@ export const SelectAddons = (props: Props) => {
 
       {alias && (
         <>
-          <InlineLabel width={'auto'} className={styles.inlineLabel}>
-            AS
-          </InlineLabel>
+          {/* TODO: should warp the input too? */}
+          <RemoveablePopover onRemove={handleRemoveAlias}>
+            <InlineLabel width={'auto'} className={styles.inlineLabel}>
+              AS
+            </InlineLabel>
+          </RemoveablePopover>
           <SegmentInput
             value={alias}
-            onChange={(text) => onChangeAlias(String(text))}
+            onChange={handleChangeAlias}
           />
         </>
       )}
@@ -146,6 +158,6 @@ function getStyles(theme: GrafanaTheme2) {
   return {
     inlineLabel: css`
       color: ${theme.colors.primary.text};
-    `,
+      `,
   };
 }

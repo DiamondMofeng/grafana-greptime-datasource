@@ -97,7 +97,7 @@ export const SelectSegment = (props: Props) => {
   }
 
   const handleOnChangeAlias = (stmtIdx: number) => {
-    return (newAlias: string) => {
+    return (newAlias: string | undefined) => {
       changeQueryByKey('selectedColumns', produce(selectStatements, (draft) => {
         draft[stmtIdx].alias = newAlias;
       }))
