@@ -81,6 +81,21 @@ export const SelectAddons = (props: Props) => {
 
   const styles = useStyles2(getStyles);
 
+  const handleAddAlias = () => {
+    onChangeAlias('alias');
+  }
+
+  const handleMassAdd = (select: SelectableValue<Addon | { type: 'alias' }>) => {
+    const newAddon = select.value!;
+    switch (newAddon.type) {
+      case 'alias':
+        handleAddAlias();
+        break;
+
+    }
+  }
+
+
   // const handleAddAddon = (select: SelectableValue<Addon>) => {
   //   const addon = select.value!;
   //   onChangeAddons([...addons, addon])
@@ -119,9 +134,7 @@ export const SelectAddons = (props: Props) => {
       )}
       <AddSegment
         loadOptions={() => Promise.resolve(addonOptions)}
-        onChange={(select) => {
-          // const addon = select.value!;
-        }}
+        onChange={handleMassAdd}
       />
     </>
   )
