@@ -32,11 +32,11 @@ describe("select statement", () => {
                 addons: [
                     {
                         type: 'function',
-                        function: 'sum'
+                        name: 'sum'
                     },
                     {
                         type: 'operator',
-                        operator: '+',
+                        name: '+',
                         param: '1'
                     }
                 ],
@@ -47,11 +47,11 @@ describe("select statement", () => {
                 addons: [
                     {
                         type: 'function',
-                        function: 'sum'
+                        name: 'sum'
                     },
                     {
                         type: 'operator',
-                        operator: '+',
+                        name: '+',
                         param: '1'
                     }
                 ],
@@ -72,20 +72,20 @@ describe("select statement", () => {
                 addons: [
                     {
                         type: 'function',
-                        function: 'distinct'
+                        name: 'distinct'
                     },
                     {
                         type: 'function',
-                        function: 'sum'
+                        name: 'sum'
                     },
                     {
                         type: 'operator',
-                        operator: '+',
+                        name: '+',
                         param: '1'
                     },
                     {
                         type: 'operator',
-                        operator: '*',
+                        name: '*',
                         param: '2'
                     }
                 ],
@@ -96,21 +96,21 @@ describe("select statement", () => {
                 addons: [
                     {
                         type: 'function',
-                        function: 'distinct'
+                        name: 'distinct'
                     },
                     {
                         type: 'operator',
-                        operator: '*',
+                        name: '*',
                         param: '3'
                     },
                     {
                         type: 'operator',
-                        operator: '+',
+                        name: '+',
                         param: '1'
                     },
                     {
                         type: 'function',
-                        function: 'sum'
+                        name: 'sum'
                     }
                 ],
                 alias: 'd'

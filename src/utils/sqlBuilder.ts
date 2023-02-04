@@ -20,12 +20,12 @@ export function processSelectStatements(selectStatements: SelectStatement[] | un
       res = stmt.addons.reduce((expr, addon, idx, addons) => {
         switch (addon.type) {
           case 'function':
-            return `${addon.function}(${expr})`;
+            return `${addon.name}(${expr})`;
           case 'operator':
             // we do not need to wrap the expression in parentheses if the next addon is a function
             return addons[idx + 1]?.type === 'function'
-              ? `${expr} ${addon.operator} ${addon.param}`
-              : `(${expr} ${addon.operator} ${addon.param})`;
+              ? `${expr} ${addon.name} ${addon.param}`
+              : `(${expr} ${addon.name} ${addon.param})`;
           default:
             console.log('Received unexpected addon type:', addon)
             return expr;

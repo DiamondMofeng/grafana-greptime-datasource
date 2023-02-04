@@ -13,13 +13,19 @@ import { AddSegment } from "./AddSegment";
 
 export type Addon = FunctionAddon | OperatorAddon;
 
+type BaseAddon = {
+  type: string;
+  name: string;
+  param?: string;
+}
+
 const availableOperators = ['+', '-', '*', '/'] as const;
 
 type Operator = typeof availableOperators[number];
 
-type OperatorAddon = {
+type OperatorAddon = BaseAddon & {
   type: 'operator';
-  operator: Operator;
+  name: Operator;
   param: string;
 }
 
@@ -27,9 +33,9 @@ const availableFunctions = ['sum', 'avg', 'max', 'min', 'count', 'distinct'] as 
 
 type Fn = typeof availableFunctions[number]; //TODO give this a better name
 
-type FunctionAddon = {
+type FunctionAddon = BaseAddon & {
   type: 'function';
-  function: Fn;
+  name: Fn;
 }
 
 const addonOptions: Array<
