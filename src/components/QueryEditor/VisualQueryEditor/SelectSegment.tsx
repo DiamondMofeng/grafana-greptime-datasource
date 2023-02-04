@@ -6,6 +6,8 @@ import { toSelectableValue } from "utils";
 import { SegmentAsync, SegmentSection } from "@grafana/ui";
 import { AddSegment } from "./AddSegment";
 import { RemoveablePopover } from "./RemoveablePopover";
+import { type Addon, SelectAddons } from "./SelectAddons";
+import produce from "immer"
 
 export type SelectStatement = {
   column: string;
@@ -14,28 +16,9 @@ export type SelectStatement = {
    * Assuming that these addons are applied to the column name in order.
    * @example [{sum}, {+ 1} , {/ 2}] => (sum(column) + 1) / 2
    */
-  addons?: Array<FunctionAddon | OperatorAddon>
+  addons?: Addon[]
   alias?: string;
 };
-
-const availableOperators = ['+', '-', '*', '/'] as const;
-
-type Operator = typeof availableOperators[number];
-
-type OperatorAddon = {
-  type: 'operator';
-  operator: Operator;
-  param: string;
-}
-
-const availableAggregations = ['sum', 'avg', 'max', 'min', 'count', 'distinct'] as const;   //TODO maybe we should manage this in a better way.
-
-type Fn = typeof availableAggregations[number]; //TODO give this a better name
-
-type FunctionAddon = {
-  type: 'function';
-  function: Fn;
-}
 
 // ===================== component =====================
 
@@ -50,6 +33,8 @@ type Props = {
 export const SelectSegment = (props: Props) => {
 
   const { selectedColumns: selectStatements, timeColumn, changeQueryByKey, onLoadColumnSchema } = props;
+
+  // ===================== column name handlers =====================
 
   /**
    * It would cause error if the there are same column names in the output
@@ -101,6 +86,26 @@ export const SelectSegment = (props: Props) => {
     };
   };
 
+  // ============= addon and alais handlers =============
+
+  const handleOnChangeAddons = (stmtIdx: number) => {
+    return (newAddons: Addon[]) => {
+      changeQueryByKey('selectedColumns', produce(selectStatements, (draft) => {
+        draft[stmtIdx].addons = newAddons;
+      }))
+    }
+  }
+
+  const handleOnChangeAlias = (stmtIdx: number) => {
+    return (newAlias: string) => {
+      changeQueryByKey('selectedColumns', produce(selectStatements, (draft) => {
+        draft[stmtIdx].alias = newAlias;
+      }))
+    }
+  }
+
+  // ============= render =============
+
   const defaultStmt = { column: '' };
 
   const selectStatementsWithPlaceholder = [...selectStatements, defaultStmt]; //last one is for add button
@@ -118,6 +123,7 @@ export const SelectSegment = (props: Props) => {
             </>
           ) : (
             <>
+              {/* column */}
               <RemoveablePopover onRemove={handleRemoveSelectedColumn(idx)}>
                 <SegmentAsync
                   value={stmt.column}
@@ -125,6 +131,12 @@ export const SelectSegment = (props: Props) => {
                   loadOptions={handleLoadReselectColumns(stmt.column)}
                 />
               </RemoveablePopover>
+              {/* addons */}
+              <SelectAddons
+                selectStatement={stmt}
+                onChangeAddons={handleOnChangeAddons(idx)}
+                onChangeAlias={handleOnChangeAlias(idx)}
+              />
             </>
           )}
         </SegmentSection>
