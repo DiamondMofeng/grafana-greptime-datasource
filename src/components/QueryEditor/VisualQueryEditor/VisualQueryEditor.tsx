@@ -5,11 +5,11 @@ import { defaultQuery, GreptimeQuery, GreptimeSourceOptions } from 'types';
 import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/ui';
 import { css } from '@emotion/css';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
-import { AddSegment } from './AddSegment';
-import { RemoveSegmentButton } from './RemoveSegment';
 import { buildQuery } from 'utils/sqlBuilder';
 import { toSelectableValue } from 'utils';
+import { SelectSegment } from './SelectSegment';
 import { WhereSegment } from './WhereSegment';
+import { GroupBySegment } from './GroupBySegment';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -22,7 +22,7 @@ export const VisualQueryEditor = (props: Props) => {
     ...defaultQuery,
     ...oriQuery,
   }
-  const { fromTable, timeColumn, selectedColumns: oriSelectedColumns, whereConditions: oriWhereConditions } = query;
+  const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
   const styles = useStyles2(getStyles);
 
@@ -38,7 +38,7 @@ export const VisualQueryEditor = (props: Props) => {
     onRunQuery();
   };
 
-  const changeQueryByKey = (key: keyof GreptimeQuery, value: any) => {
+  const changeQueryByKey = <T extends keyof GreptimeQuery>(key: T, value: GreptimeQuery[T]) => {
     const newQuery = { ...query, [key]: value };
     onChange(newQuery);
     onUpdateQuery(newQuery);
@@ -73,6 +73,10 @@ export const VisualQueryEditor = (props: Props) => {
     return fromTable ? client.queryColumnSchemaOfTable(fromTable) : Promise.resolve([]);
   }, [client, fromTable]);
 
+  const handleLoadColumnSchema = async () => {
+    return await getColumnSchema;
+  };
+
   const getColumnNames = useMemo(async () => {
     const columns = await getColumnSchema;
     return columns.map((column) => column.name);
@@ -84,83 +88,6 @@ export const VisualQueryEditor = (props: Props) => {
       .filter((column) => mapGreptimeTypeToGrafana(column.data_type) === FieldType.time)
       .map((column) => toSelectableValue(column.name));
   }, [getColumnSchema]);
-
-  //* For Select Segment
-
-  const selectedColumns = (oriSelectedColumns ?? []).concat(['foobar']); //last one is for add button
-
-  /**
-   * GreptimeDB's sql syntax do not allow select same column twice.
-   */
-  const unselectedColumnsSchemas = useMemo(async () => {
-    const columns = await getColumnSchema;
-    return columns.filter((column) => ![...selectedColumns, timeColumn].includes(column.name));
-  }, [getColumnSchema, selectedColumns, timeColumn]);
-
-  const handleLoadUnselectedColumns = async () => {
-    return (await unselectedColumnsSchemas).map((column) => toSelectableValue(column.name));
-  };
-
-  const handleAddColumn = (select: SelectableValue<string>) => {
-    const newSelectedColumns = selectedColumns.slice(0, -1).concat([select.value!]);
-    changeQueryByKey('selectedColumns', newSelectedColumns);
-  };
-
-  /**
-   * Should return self value concat other unselected values.
-   */
-  const handleLoadReselectColumns = (selfVal: string) => {
-    return async () => {
-      return [toSelectableValue(selfVal)].concat(await handleLoadUnselectedColumns());
-    };
-  };
-
-  /**
-   * Reselect a selected column.
-   */
-  const handleSelectedColumnChange = (columnName: string) => {
-    return (select: SelectableValue<string>) => {
-      const newSelectedColumns = (oriSelectedColumns ?? []).map((name) => (name === columnName ? select.value! : name));
-      changeQueryByKey('selectedColumns', newSelectedColumns);
-    };
-  };
-
-  const handleRemoveSelectedColumn = (columnName: string) => {
-    return () => {
-      const newSelectedColumns = (oriSelectedColumns ?? []).filter((name) => name !== columnName);
-      changeQueryByKey('selectedColumns', newSelectedColumns);
-    };
-  };
-
-  //* For Where Segment
-
-  // const whereConditions = (oriWhereConditions ?? []).concat(['foobar']); //last one is for add button
-
-  // //TODO: this state should not be placed here, as this makes the component rerender frequently.
-  // const [newWhereCondition, setNewWhereCondition] = useState('');
-
-  // const handleAddWhereCondition = (newCondition: string | number) => {
-  //   if (newCondition === '') {
-  //     return;
-  //   }
-  //   const newWhereConditions = (oriWhereConditions ?? []).concat([`${newCondition}`]);
-  //   setNewWhereCondition('');
-  //   changeQueryByKey('whereConditions', newWhereConditions);
-  // };
-
-  // const handleChangeWhereCondition = (idx: number) => {
-  //   return (newCondition: string | number) => {
-  //     const newWhereConditions = (oriWhereConditions ?? []).map((c, i) => (i === idx ? `${newCondition}` : c));
-  //     changeQueryByKey('whereConditions', newWhereConditions);
-  //   };
-  // };
-
-  // const handleRemoveWhereCondition = (idx: number) => {
-  //   return () => {
-  //     const newWhereConditions = (oriWhereConditions ?? []).filter((c, i) => i !== idx);
-  //     changeQueryByKey('whereConditions', newWhereConditions);
-  //   };
-  // };
 
   return (
     <>
@@ -181,29 +108,25 @@ export const VisualQueryEditor = (props: Props) => {
           />
         </SegmentSection>
         {/* SELECT */}
-        {selectedColumns.map((colName, idx) => (
-          <SegmentSection label={idx === 0 ? 'SELECT' : ''} fill={true} key={colName}>
-            {idx === selectedColumns.length - 1 ? (
-              <AddSegment loadOptions={handleLoadUnselectedColumns} onChange={handleAddColumn} />
-            ) : (
-              <>
-                <SegmentAsync
-                  value={colName}
-                  onChange={handleSelectedColumnChange(colName)}
-                  loadOptions={handleLoadReselectColumns(colName)}
-                />
-                <RemoveSegmentButton handelRemoveSegment={handleRemoveSelectedColumn(colName)} />
-              </>
-            )}
-          </SegmentSection>
-        ))}
+        <SelectSegment
+          selectedColumns={selectedColumns}
+          timeColumn={timeColumn}
+          changeQueryByKey={changeQueryByKey}
+          onLoadColumnSchema={handleLoadColumnSchema}
+        />
         {/* WHERE */}
         <WhereSegment
-          whereConditions={oriWhereConditions}
+          whereConditions={whereConditions}
           handleLoadAllColumns={async () => (await getColumnNames).map(toSelectableValue)}
           changeQueryByKey={changeQueryByKey}
         />
         {/* GROUP BY */}
+        <GroupBySegment
+          groupByColumns={groupByColumns}
+          selectStatements={selectedColumns}
+          timeColumn={timeColumn}
+          changeQueryByKey={changeQueryByKey}
+        />
       </div>
     </>
   );

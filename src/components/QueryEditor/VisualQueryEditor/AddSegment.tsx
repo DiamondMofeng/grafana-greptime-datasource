@@ -4,11 +4,24 @@ import { SelectableValue } from '@grafana/data';
 import { SegmentAsync } from '@grafana/ui';
 import React from 'react';
 
-type Props = {
-  loadOptions: (query?: string) => Promise<Array<SelectableValue<string>>>;
-  onChange: (item: SelectableValue<string>) => void;
+/**
+ * Grafana has some issue on type `SelectableValue`.  
+ * We have to mark the type of param in `onChange` manually if it is different from the value in options.
+ */
+
+type Props<T, U> = {
+  loadOptions: (query?: string) => Promise<Array<SelectableValue<T>>>;
+  onChange: (item: SelectableValue<U>) => void;
 };
 
-export const AddSegment: React.FC<Props> = (props) => {
-  return <SegmentAsync value={'+'} {...props} />;
+export const AddSegment = <T, U = T>(props: Props<T, U>) => {
+  const { loadOptions, onChange } = props;
+
+  return (
+    <SegmentAsync
+      placeholder='+'
+      loadOptions={loadOptions as any}
+      onChange={onChange}
+    />
+  );
 };
