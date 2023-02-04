@@ -4,11 +4,11 @@ import { SelectableValue } from '@grafana/data';
 import { SegmentAsync } from '@grafana/ui';
 import React from 'react';
 
-type Props = {
-  loadOptions: (query?: string) => Promise<Array<SelectableValue<string>>>;
-  onChange: (item: SelectableValue<string>) => void;
+type Props<T> = {
+  loadOptions: (query?: string) => Promise<Array<SelectableValue<T>>>;
+  onChange: (item: SelectableValue<T>) => void;
 };
 
-export const AddSegment: React.FC<Props> = (props) => {
-  return <SegmentAsync value={'+'} {...props} />;
+export const AddSegment = <T,>(props: Props<T>) => {
+  return <SegmentAsync placeholder='+' {...props} />;
 };
