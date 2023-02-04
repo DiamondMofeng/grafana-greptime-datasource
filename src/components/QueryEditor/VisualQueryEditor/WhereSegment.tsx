@@ -1,11 +1,10 @@
 import React from "react";
-import { SegmentInput, SegmentSection, SegmentAsync, Segment, InlineLabel } from "@grafana/ui";
+import { SegmentInput, SegmentSection, SegmentAsync, Segment } from "@grafana/ui";
 import { RemoveablePopover } from "./RemoveablePopover";
 import { toSelectableValue } from "utils";
 import type { SelectableValue } from "@grafana/data";
 import type { GreptimeQuery } from "types";
-import { css } from "@emotion/css";
-// import { AddSegment } from "./AddSegment";
+import { AddSegment } from "./AddSegment";
 
 /*
  * The format of WHERE statements should be [column] [operator] [value] [AND|OR]
@@ -27,15 +26,7 @@ type connectorType = 'AND' | 'OR' | undefined;
  */
 export type WhereStatement = Readonly<[string, operatorType, valueType, connectorType]>;
 
-const defaultStatement: WhereStatement = ["select column", OPERATORS[0], '', 'AND'];
-
-const AddWhereConditionButton = (props: {
-  onClick: () => void;
-}) => (
-  <InlineLabel className={css({ cursor: 'pointer' })} width={'auto'} onClick={props.onClick}>
-    +
-  </InlineLabel>
-)
+const defaultStatement: WhereStatement = ["select column", OPERATORS[0], 'value', 'AND'];
 
 type Props = {
   whereConditions: WhereStatement[];
@@ -46,8 +37,8 @@ export const WhereSegment = (props: Props) => {
 
   const { whereConditions, handleLoadAllColumns, changeQueryByKey } = props;
 
-  const handleClickAddButton = () => {
-    const newWhereConditions = [...whereConditions, defaultStatement];
+  const handleAddCondition = (select: SelectableValue<string>) => {
+    const newWhereConditions = [...whereConditions, [select.value!, defaultStatement[1], defaultStatement[2], defaultStatement[3]] as const];
     changeQueryByKey('whereConditions', newWhereConditions);
   }
 
@@ -58,11 +49,6 @@ export const WhereSegment = (props: Props) => {
           ? [select.value!, condition[1], condition[2], condition[3]] as const
           : condition
       });
-
-
-
-
-
 
       changeQueryByKey('whereConditions', newWhereConditions);
     }
@@ -120,7 +106,10 @@ export const WhereSegment = (props: Props) => {
           <SegmentSection label={idx === 0 ? 'WHERE' : ''} fill={true} key={condition.toString() + idx} >
             {idx === whereConditionsWithPlaceholder.length - 1 ? (
               <>
-                <AddWhereConditionButton onClick={handleClickAddButton} />
+                <AddSegment
+                  onChange={handleAddCondition}
+                  loadOptions={handleLoadAllColumns}
+                />
               </>
             ) : (
               <>
