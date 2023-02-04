@@ -7,10 +7,11 @@
 import React from "react";
 import type { GrafanaTheme2, SelectableValue } from "@grafana/data";
 import type { SelectStatement } from "./SelectSegment";
-import { InlineLabel, SegmentInput, useStyles2 } from "@grafana/ui";
+import { InlineLabel, SegmentAsync, SegmentInput, useStyles2 } from "@grafana/ui";
 import { css } from "@emotion/css";
 import { AddSegment } from "./AddSegment";
 import { RemoveablePopover } from "./RemoveablePopover";
+import produce from "immer";
 
 export type Addon = FunctionAddon | OperatorAddon;
 
@@ -56,14 +57,14 @@ const addonOptions: Array<
       label: 'Functions',
       options: availableFunctions.map((fn) => ({
         label: fn,
-        value: { type: 'function', function: fn }
+        value: { type: 'function', name: fn }
       }))
     },
     {
       label: 'Math',
       options: availableOperators.map((op) => ({
         label: op,
-        value: { type: 'operator', operator: op, param: '100' }
+        value: { type: 'operator', name: op, param: '100' }
       }))
     },
   ]
@@ -75,12 +76,14 @@ type Props = {
 };
 
 export const SelectAddons = (props: Props) => {
-  const { selectStatement, onChangeAlias } = props;
+  const { selectStatement, onChangeAlias, onChangeAddons } = props;
 
-  // const addons = selectStatement.addons ?? []
+  const addons = selectStatement.addons ?? []
   const alias = selectStatement.alias
 
   const styles = useStyles2(getStyles);
+
+  // ======
 
   const handleAddAlias = () => {
     onChangeAlias('alias');
@@ -94,42 +97,86 @@ export const SelectAddons = (props: Props) => {
     onChangeAlias(String(text));
   }
 
+  // ======
+
+  const handleAddAddon = (addon: Addon) => {
+    onChangeAddons([...addons, addon])
+  }
+
+  const handleRemoveAddon = (addonIdx: number) => {
+    return () => {
+      const newAddons = addons.filter((_, i) => i !== addonIdx);
+      onChangeAddons(newAddons);
+    }
+  }
+
+  const handleReselectAddon = (addonIdx: number) => {
+    return (select: SelectableValue<Addon>) => {
+      const newAddons = produce(addons, (draft) => {
+        draft[addonIdx] = select.value!;
+      });
+      onChangeAddons(newAddons);
+    }
+  }
+
+  const handleChangeAddonParam = (addonIdx: number) => {
+    return (text: string | number) => {
+      const newAddons = produce(addons, (draft) => {
+        draft[addonIdx].param = String(text);
+      });
+      onChangeAddons(newAddons);
+    }
+  }
+
+  // ======
+
   const handleMassAdd = (select: SelectableValue<Addon | { type: 'alias' }>) => {
     const newAddon = select.value!;
     switch (newAddon.type) {
       case 'alias':
         handleAddAlias();
         break;
-
+      default:
+        handleAddAddon(newAddon);
+        break;
     }
   }
 
-
-  // const handleAddAddon = (select: SelectableValue<Addon>) => {
-  //   const addon = select.value!;
-  //   onChangeAddons([...addons, addon])
-  // }
-
-  // const handleRemoveAddon = (addonIdx: number) => {
-  //   return () => {
-  //     const newAddons = addons.filter((_, i) => i !== addonIdx);
-  //     onChangeAddons(newAddons);
-  //   }
-  // }
-
-  // const handleChangeAddon = (addonIdx: number) => {
-  //   return (select: SelectableValue<Addon>) => {
-  //     const newAddons = addons.map((addon, i) => i === addonIdx ? select.value! : addon);
-  //     onChangeAddons(newAddons);
-  //   }
-  // }
-
-
-
   return (
     <>
-
-
+      {/* render addons */}
+      {addons.map((addon, idx) =>
+        <React.Fragment key={addon.name + addon.param}>{
+          addon.param === undefined ? (
+            <>
+              {console.log("rendering", addon.name)}
+              <RemoveablePopover onRemove={handleRemoveAddon(idx)}>
+                <SegmentAsync
+                  value={addon.name as any}
+                  loadOptions={() => Promise.resolve([]) as any}
+                  onChange={handleReselectAddon(idx)}
+                />
+              </RemoveablePopover>
+            </>
+          ) : (
+            <>
+              <RemoveablePopover onRemove={handleRemoveAddon(idx)}>
+                <SegmentAsync
+                  value={addon.name as any}
+                  loadOptions={() => Promise.resolve(addonOptions) as any}
+                  onChange={handleReselectAddon(idx)}
+                />
+              </RemoveablePopover>
+              <SegmentInput
+                value={addon.param}
+                onChange={handleChangeAddonParam(idx)}
+              />
+            </>
+          )
+        }
+        </React.Fragment>
+      )}
+      {/* render alias */}
       {alias && (
         <>
           {/* TODO: should warp the input too? */}
@@ -144,6 +191,7 @@ export const SelectAddons = (props: Props) => {
           />
         </>
       )}
+      {/* render add button */}
       <AddSegment
         loadOptions={() => Promise.resolve(addonOptions)}
         onChange={handleMassAdd}
