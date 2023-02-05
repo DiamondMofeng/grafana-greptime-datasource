@@ -46,5 +46,3 @@ pkg
 *.go
 go.mod
 go.sum
-
-yarn.lock
