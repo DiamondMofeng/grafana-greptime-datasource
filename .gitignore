@@ -37,7 +37,7 @@ e2e-results/
 greptime/
 
 # Temp
-.github/workflows/ci.yml
+
 .github/workflows/release.yml
 cypress/
 pkg
