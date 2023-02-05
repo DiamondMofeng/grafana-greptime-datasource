@@ -31,18 +31,17 @@ e2e-results/
 # Editor
 .idea
 
+# cache
 .eslintcache
 
-# Greptimedb
+# Greptimedb binary
 greptime/
 
-# Temp
-
-.github/workflows/release.yml
+# Currently we have not setup e2e tests
 cypress/
+
+# Currently we do not have a go backend
 pkg
-
-
 *.go
 go.mod
 go.sum
