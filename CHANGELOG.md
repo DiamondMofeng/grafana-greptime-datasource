@@ -1,5 +1,13 @@
 # Changelog
 
-## 1.0.0 (Unreleased)
+## 0.1.0 
 
-Initial release.
+Added visual editor, which supports `FROM` `SELECT` `WHERE`
+
+## 0.2.0
+
+Added more features to the visual editor, including `GROUP BY`, `Aggregate Function` for `SELECT`
+
+## 0.2.1
+
+Auto detect time column after table changes.

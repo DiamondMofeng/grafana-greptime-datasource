@@ -85,6 +85,7 @@ export const VisualQueryEditor = (props: Props) => {
             loadOptions={handleLoadFromTables}
           />
           <InlineTimeColumnSection
+            fromTable={fromTable}
             timeColumn={timeColumn}
             changeQueryByKey={changeQueryByKey}
             onLoadColumnSchema={handleLoadColumnSchema}
