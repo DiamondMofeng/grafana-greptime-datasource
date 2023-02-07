@@ -5128,6 +5128,11 @@ form-data@~2.3.2:
     combined-stream "^1.0.6"
     mime-types "^2.1.12"
 
+fp-ts@^2.13.1:
+  version "2.13.1"
+  resolved "https://registry.npmmirror.com/fp-ts/-/fp-ts-2.13.1.tgz#1bf2b24136cca154846af16752dc29e8fa506f2a"
+  integrity sha512-0eu5ULPS2c/jsa1lGFneEFFEdTbembJv8e4QKXeVJ3lm/5hyve06dlKZrpxmMwJt6rYen7sxmHHK2CLaXvWuWQ==
+
 fs-extra@^10.0.0:
   version "10.1.0"
   resolved "https://registry.npmmirror.com/fs-extra/-/fs-extra-10.1.0.tgz#02873cfbc4084dde127eaa5f9905eef2325d1abf"
