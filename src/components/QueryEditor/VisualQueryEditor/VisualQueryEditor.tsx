@@ -1,15 +1,14 @@
 import React, { useMemo, } from 'react';
 import type { DataSource } from 'datasource';
-import { FieldType, GrafanaTheme2, QueryEditorProps, SelectableValue } from '@grafana/data';
+import { QueryEditorProps, SelectableValue } from '@grafana/data';
 import { defaultQuery, GreptimeQuery, GreptimeSourceOptions } from 'types';
-import { InlineLabel, SegmentAsync, SegmentSection, useStyles2 } from '@grafana/ui';
-import { css } from '@emotion/css';
-import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
+import { SegmentAsync, SegmentSection } from '@grafana/ui';
 import { buildQuery } from 'utils/sqlBuilder';
 import { toSelectableValue } from 'utils';
 import { SelectSection } from './SelectSection';
 import { WhereSection } from './WhereSection';
 import { GroupBySection } from './GroupBySection';
+import { InlineTimeColumnSection } from './TimeColumnSection';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -23,8 +22,6 @@ export const VisualQueryEditor = (props: Props) => {
     ...oriQuery,
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
-
-  const styles = useStyles2(getStyles);
 
   //TODO!: Below logic makes the component render more than once, which affects the performance.
   /**
@@ -46,10 +43,6 @@ export const VisualQueryEditor = (props: Props) => {
 
   const handleFromTableChange = (select: SelectableValue<string>) => {
     changeQueryByKey('fromTable', select.value);
-  };
-
-  const handleTimeColumnChange = (select: SelectableValue<string>) => {
-    changeQueryByKey('timeColumn', select.value);
   };
 
   /**
@@ -82,13 +75,6 @@ export const VisualQueryEditor = (props: Props) => {
     return columns.map((column) => column.name);
   }, [getColumnSchema]);
 
-  const getTimeColumns = useMemo(async () => {
-    const columns = await getColumnSchema;
-    return columns
-      .filter((column) => mapGreptimeTypeToGrafana(column.data_type) === FieldType.time)
-      .map((column) => toSelectableValue(column.name));
-  }, [getColumnSchema]);
-
   return (
     <>
       <div>
@@ -98,13 +84,10 @@ export const VisualQueryEditor = (props: Props) => {
             onChange={handleFromTableChange}
             loadOptions={handleLoadFromTables}
           />
-          <InlineLabel width={'auto'} className={styles.inlineLabel}>
-            Time column
-          </InlineLabel>
-          <SegmentAsync
-            value={timeColumn ?? 'select time column'} //TODO: auto detect time column
-            onChange={handleTimeColumnChange}
-            loadOptions={async () => await getTimeColumns}
+          <InlineTimeColumnSection
+            timeColumn={timeColumn}
+            changeQueryByKey={changeQueryByKey}
+            onLoadColumnSchema={handleLoadColumnSchema}
           />
         </SegmentSection>
         {/* SELECT */}
@@ -132,10 +115,3 @@ export const VisualQueryEditor = (props: Props) => {
   );
 };
 
-function getStyles(theme: GrafanaTheme2) {
-  return {
-    inlineLabel: css`
-      color: ${theme.colors.primary.text};
-    `,
-  };
-}
