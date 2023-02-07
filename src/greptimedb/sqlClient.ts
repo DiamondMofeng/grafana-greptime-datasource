@@ -39,7 +39,7 @@ export class GreptimeDBHttpSqlClient {
   //   return response;
   // }
 
-  async querySql<T extends any[] = any[]>(sql: String): Promise<GreptimeResponse<T>> {
+  async querySql<T extends any[] = any[]>(sql: string): Promise<GreptimeResponse<T>> {
     const response: GreptimeResponse<T> = await this.fetch({
       url: this.SQL_URL,
       method: 'POST',
@@ -52,7 +52,7 @@ export class GreptimeDBHttpSqlClient {
     return response;
   }
 
-  async querySqlToDataFrame(sql: String): Promise<MutableDataFrame> {
+  async querySqlToDataFrame(sql: string): Promise<MutableDataFrame> {
     const response = await this.querySql(sql);
     return parseResponseToDataFrame(response);
   }
@@ -70,11 +70,11 @@ export class GreptimeDBHttpSqlClient {
    * Use `DESC TABLE ${table}` to get column schemas.
    * TODO Currently `DESC` do not support `db` parameter, so we have to use `DESC TABLE ${db}.${table}`
    */
-  async queryColumnSchemaOfTable(table: String): Promise<GreptimeColumnSchema[]> {
+  async queryColumnSchemaOfTable(table: string): Promise<GreptimeColumnSchema[]> {
     /** [Field, Type, Null, Default, Semantic Type] */
     type DescribeTableRow = [string, GreptimeDataTypes, string, string, string];
 
-    const response: GreptimeResponse<DescribeTableRow> = await this.querySql(`DESC TABLE ${this.database}.${table}`);
+    const response: GreptimeResponse<DescribeTableRow> = await this.querySql(`DESC TABLE ${table}`);
 
     return response.output[0].records.rows.map((row) => ({
       name: row[0],
@@ -82,7 +82,7 @@ export class GreptimeDBHttpSqlClient {
     }));
   }
 
-  async queryColumnNamesOfTable(table: String): Promise<string[]> {
+  async queryColumnNamesOfTable(table: string): Promise<string[]> {
     const schemas = await this.queryColumnSchemaOfTable(table);
     return schemas.map((schema) => schema.name);
   }
