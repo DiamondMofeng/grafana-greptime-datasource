@@ -6,7 +6,7 @@
  */
 import React from "react";
 import type { GrafanaTheme2, SelectableValue } from "@grafana/data";
-import type { SelectStatement } from "./SelectSegment";
+import type { SelectStatement } from "./SelectSection";
 import { InlineLabel, SegmentAsync, SegmentInput, useStyles2 } from "@grafana/ui";
 import { css } from "@emotion/css";
 import { AddSegment } from "./AddSegment";

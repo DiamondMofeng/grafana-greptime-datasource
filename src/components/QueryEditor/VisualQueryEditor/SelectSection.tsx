@@ -30,7 +30,7 @@ type Props = {
   onLoadColumnSchema: () => Promise<GreptimeColumnSchema[]>;
 }
 
-export const SelectSegment = (props: Props) => {
+export const SelectSection = (props: Props) => {
 
   const { selectedColumns: selectStatements, timeColumn, changeQueryByKey, onLoadColumnSchema } = props;
 

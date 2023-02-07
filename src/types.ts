@@ -1,6 +1,6 @@
 import type { DataQuery, DataSourceJsonData } from '@grafana/data';
-import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSegment';
-import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSegment';
+import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSection';
+import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
 
 export interface GreptimeQuery extends DataQuery {
   isRawQuery?: boolean;

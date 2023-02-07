@@ -1,5 +1,5 @@
-import type { SelectStatement } from "components/QueryEditor/VisualQueryEditor/SelectSegment"
-import type { WhereStatement } from "components/QueryEditor/VisualQueryEditor/WhereSegment"
+import type { SelectStatement } from "components/QueryEditor/VisualQueryEditor/SelectSection"
+import type { WhereStatement } from "components/QueryEditor/VisualQueryEditor/WhereSection"
 import {
     // buildQuery,
     connectWhereConditions, processSelectStatements

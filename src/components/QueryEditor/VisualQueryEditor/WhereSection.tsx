@@ -33,7 +33,8 @@ type Props = {
   handleLoadAllColumns: () => Promise<Array<SelectableValue<string>>>;
   changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
-export const WhereSegment = (props: Props) => {
+
+export const WhereSection = (props: Props) => {
 
   const { whereConditions, handleLoadAllColumns, changeQueryByKey } = props;
 

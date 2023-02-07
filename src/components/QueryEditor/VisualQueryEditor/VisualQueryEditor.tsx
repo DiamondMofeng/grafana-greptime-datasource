@@ -7,9 +7,9 @@ import { css } from '@emotion/css';
 import { mapGreptimeTypeToGrafana } from 'greptimedb/utils';
 import { buildQuery } from 'utils/sqlBuilder';
 import { toSelectableValue } from 'utils';
-import { SelectSegment } from './SelectSegment';
-import { WhereSegment } from './WhereSegment';
-import { GroupBySegment } from './GroupBySegment';
+import { SelectSection } from './SelectSection';
+import { WhereSection } from './WhereSection';
+import { GroupBySection } from './GroupBySection';
 
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
@@ -108,20 +108,20 @@ export const VisualQueryEditor = (props: Props) => {
           />
         </SegmentSection>
         {/* SELECT */}
-        <SelectSegment
+        <SelectSection
           selectedColumns={selectedColumns}
           timeColumn={timeColumn}
           changeQueryByKey={changeQueryByKey}
           onLoadColumnSchema={handleLoadColumnSchema}
         />
         {/* WHERE */}
-        <WhereSegment
+        <WhereSection
           whereConditions={whereConditions}
           handleLoadAllColumns={async () => (await getColumnNames).map(toSelectableValue)}
           changeQueryByKey={changeQueryByKey}
         />
         {/* GROUP BY */}
-        <GroupBySegment
+        <GroupBySection
           groupByColumns={groupByColumns}
           selectStatements={selectedColumns}
           timeColumn={timeColumn}

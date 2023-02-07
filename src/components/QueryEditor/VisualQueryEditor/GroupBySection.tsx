@@ -1,11 +1,11 @@
 import React from "react";
 
 import { Segment, SegmentSection } from "@grafana/ui";
-import { GreptimeQuery } from "types";
+import type { GreptimeQuery } from "types";
 import { toSelectableValue } from "utils";
-import { SelectableValue } from "@grafana/data";
+import type { SelectableValue } from "@grafana/data";
 import { AddSegment } from "./AddSegment";
-import { SelectStatement } from "./SelectSegment";
+import type { SelectStatement } from "./SelectSection";
 import { RemoveablePopover } from "./RemoveablePopover";
 
 type Props = {
@@ -15,7 +15,7 @@ type Props = {
   changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
 
-export const GroupBySegment = (props: Props) => {
+export const GroupBySection = (props: Props) => {
   const { groupByColumns, changeQueryByKey, selectStatements, timeColumn } = props;
 
   const handleLoadAddableColumns = () => {
