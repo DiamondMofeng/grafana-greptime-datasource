@@ -79,6 +79,9 @@ export class GreptimeDBHttpSqlClient {
     return response.output[0].records.rows.map((row) => ({
       name: row[0],
       data_type: row[1],
+      nullable: row[2] === 'YES',
+      default: row[3],
+      semantic_type: row[4],
     }));
   }
 

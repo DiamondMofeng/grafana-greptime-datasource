@@ -60,4 +60,7 @@ export interface GreptimeResponse<T extends any[] = any[]> {
 export interface GreptimeColumnSchema {
   name: string;
   data_type: GreptimeDataTypes;
+  nullable: boolean;
+  default: string;    //TODO maybe this is not a string
+  semantic_type: string;
 }
