@@ -153,7 +153,7 @@ export const SelectAddons = (props: Props) => {
             <>
               <RemoveablePopover onRemove={handleRemoveAddon(idx)}>
                 <SegmentAsync
-                  value={`addon.name${addon.type === 'function' ? '()' : ''}` as any}
+                  value={`${addon.name}${addon.type === 'function' ? ' ( )' : ''}` as any}
                   loadOptions={() => Promise.resolve(addonOptions) as any}
                   onChange={handleReselectAddon(idx)}
                 />
