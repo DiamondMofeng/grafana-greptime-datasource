@@ -103,6 +103,15 @@ export enum GreptimeHttpResultCode {
   // ====== End of auth related status code =====
 }
 
+interface Output<T extends any[] = any[]> {
+  records: {
+    schema: {
+      column_schemas: GreptimeColumnSchemaBrife[];
+    };
+    rows: T[];
+  };
+}
+
 /**
  * T is usually a tuple
  */
@@ -110,16 +119,7 @@ export interface GreptimeResponseSuccess<T extends any[] = any[]> {
   code: GreptimeHttpResultCode.Success;
   execution_time_ms: number;
   //this is a single-element array
-  output: [
-    {
-      records: {
-        schema: {
-          column_schemas: GreptimeColumnSchema[];
-        };
-        rows: T[];
-      };
-    }
-  ];
+  output: Array<Output<T>>;
 }
 
 export interface GreptimeResponseFailed {
@@ -132,7 +132,12 @@ export type GreptimeResponse<T extends any[] = any[]> =
   | GreptimeResponseSuccess<T>
   | GreptimeResponseFailed;
 
-export interface GreptimeColumnSchema {
+export interface GreptimeColumnSchemaBrife {
+  name: string;
+  data_type: GreptimeDataTypes;
+}
+
+export interface GreptimeColumnSchemaDetailed {
   name: string;
   data_type: GreptimeDataTypes;
   nullable: boolean;

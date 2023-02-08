@@ -1,6 +1,6 @@
 import type { MutableDataFrame } from '@grafana/data';
 import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
-import { GreptimeColumnSchema, GreptimeDataTypes, GreptimeResponse, GreptimeResponseSuccess } from './types';
+import { GreptimeColumnSchemaDetailed, GreptimeDataTypes, GreptimeResponse, GreptimeResponseSuccess } from './types';
 import { lastValueFrom } from 'rxjs';
 import { extractDataRows, parseResponseToDataFrame } from './utils';
 
@@ -83,7 +83,7 @@ export class GreptimeDBHttpSqlClient {
    * Use `DESC TABLE ${table}` to get column schemas.
    * TODO Currently `DESC` do not support `db` parameter, so we have to use `DESC TABLE ${db}.${table}`
    */
-  async queryColumnSchemaOfTable(table: string): Promise<GreptimeColumnSchema[]> {
+  async queryColumnSchemaOfTable(table: string): Promise<GreptimeColumnSchemaDetailed[]> {
     /** [Field, Type, Null, Default, Semantic Type] */
     type DescribeTableRow = [string, GreptimeDataTypes, string, string, string];
 
