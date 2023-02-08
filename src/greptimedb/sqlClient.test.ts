@@ -1,5 +1,5 @@
 import { GreptimeDBHttpSqlClient } from "./sqlClient";
-import type { GreptimeColumnSchema, GreptimeResponse } from "./types";
+import type { GreptimeColumnSchema, GreptimeResponseSuccess } from "./types";
 
 /*
  * TODO: Organize this file better
@@ -9,7 +9,7 @@ import type { GreptimeColumnSchema, GreptimeResponse } from "./types";
 function makeGreptimeResponse<T extends any[] = any[]>(
   rows: T[],
   schema?: GreptimeColumnSchema[]
-): GreptimeResponse<T> {
+): GreptimeResponseSuccess<T> {
   return {
     code: 0,
     execution_time_ms: 1,
@@ -27,7 +27,7 @@ function makeGreptimeResponse<T extends any[] = any[]>(
   }
 }
 
-function makeMockedFetch<T extends any[] = any[]>(mockResponse: GreptimeResponse<T>) {
+function makeMockedFetch<T extends any[] = any[]>(mockResponse: GreptimeResponseSuccess<T>) {
   return jest.fn().mockImplementation(() => {
     return Promise.resolve(mockResponse);
   })

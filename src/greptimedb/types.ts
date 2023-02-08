@@ -38,6 +38,7 @@ export enum GreptimeDataTypes {
   List = 'List',
 }
 
+// currently unused
 export enum GreptimeHttpResultCode {
   // ====== Begin of common status code ==============
   /// Success.
@@ -105,8 +106,8 @@ export enum GreptimeHttpResultCode {
 /**
  * T is usually a tuple
  */
-export interface GreptimeResponse<T extends any[] = any[]> {
-  code: number;
+export interface GreptimeResponseSuccess<T extends any[] = any[]> {
+  code: GreptimeHttpResultCode.Success;
   execution_time_ms: number;
   //this is a single-element array
   output: [
@@ -120,6 +121,16 @@ export interface GreptimeResponse<T extends any[] = any[]> {
     }
   ];
 }
+
+export interface GreptimeResponseFailed {
+  code: Omit<GreptimeHttpResultCode, GreptimeHttpResultCode.Success>;
+  execution_time_ms: number;
+  error: string;
+}
+
+export type GreptimeResponse<T extends any[] = any[]> =
+  | GreptimeResponseSuccess<T>
+  | GreptimeResponseFailed;
 
 export interface GreptimeColumnSchema {
   name: string;

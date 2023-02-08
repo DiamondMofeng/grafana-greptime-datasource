@@ -1,6 +1,6 @@
 import type { MutableDataFrame } from '@grafana/data';
 import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
-import type { GreptimeColumnSchema, GreptimeDataTypes, GreptimeResponse } from './types';
+import { GreptimeColumnSchema, GreptimeDataTypes, GreptimeResponse, GreptimeResponseSuccess } from './types';
 import { lastValueFrom } from 'rxjs';
 import { extractDataRows, parseResponseToDataFrame } from './utils';
 
@@ -24,9 +24,22 @@ export class GreptimeDBHttpSqlClient {
     return JSON.stringify(response) === JSON.stringify({});
   }
 
-  private async fetch<T extends any[] = any[]>(options: BackendSrvRequest): Promise<GreptimeResponse<T>> {
+  private async fetch<T extends any[] = any[]>(options: BackendSrvRequest): Promise<GreptimeResponseSuccess<T>> {
+    /**
+     * When fetching, there are three possible outcomes:
+     * 1. The request is successful, and the response is a GreptimeResponseSuccess object.
+     * 2. The request is successful, but the response is a GreptimeResponseError object.
+     * 3. The request is failed, and the response is a FetchError object.
+     */
     const response = lastValueFrom(getBackendSrv().fetch<GreptimeResponse<T>>(options));
-    return (await response).data;
+    const data = (await response).data;
+
+    if ('error' in data) {
+      throw new Error(`Error code ${data.code}.
+      ${data.error}`);
+    }
+
+    return data;
   }
 
   // async post(url: string, data?: any): Promise<GreptimeDBResponse> {
@@ -39,8 +52,8 @@ export class GreptimeDBHttpSqlClient {
   //   return response;
   // }
 
-  async querySql<T extends any[] = any[]>(sql: string): Promise<GreptimeResponse<T>> {
-    const response: GreptimeResponse<T> = await this.fetch({
+  async querySql<T extends any[] = any[]>(sql: string): Promise<GreptimeResponseSuccess<T>> {
+    const response: GreptimeResponseSuccess<T> = await this.fetch({
       url: this.SQL_URL,
       method: 'POST',
       params: {
@@ -61,7 +74,7 @@ export class GreptimeDBHttpSqlClient {
    * Show tables in current database.
    */
   async showTables(): Promise<string[]> {
-    const response: GreptimeResponse<string[]> = await this.querySql(`SHOW TABLES`);
+    const response: GreptimeResponseSuccess<string[]> = await this.querySql(`SHOW TABLES`);
 
     return extractDataRows(response).map((row) => row[0]);
   }
@@ -74,7 +87,7 @@ export class GreptimeDBHttpSqlClient {
     /** [Field, Type, Null, Default, Semantic Type] */
     type DescribeTableRow = [string, GreptimeDataTypes, string, string, string];
 
-    const response: GreptimeResponse<DescribeTableRow> = await this.querySql(`DESC TABLE ${table}`);
+    const response: GreptimeResponseSuccess<DescribeTableRow> = await this.querySql(`DESC TABLE ${table}`);
 
     return response.output[0].records.rows.map((row) => ({
       name: row[0],
