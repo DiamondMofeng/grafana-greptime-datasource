@@ -31,7 +31,9 @@ type OperatorAddon = BaseAddon & {
   param: string;
 }
 
-const availableFunctions = ['sum', 'avg', 'max', 'min', 'count', 'distinct'] as const;   //TODO maybe we should manage this in a better way.
+const aggregateFunctions = ['sum', 'avg', 'max', 'min', 'count'] as const;
+
+const availableFunctions = [...aggregateFunctions, 'distinct'] as const;   //TODO maybe we should manage this in a better way.
 
 type Fn = typeof availableFunctions[number]; //TODO give this a better name
 
@@ -149,11 +151,10 @@ export const SelectAddons = (props: Props) => {
         <React.Fragment key={addon.name + addon.param}>{
           addon.param === undefined ? (
             <>
-              {console.log("rendering", addon.name)}
               <RemoveablePopover onRemove={handleRemoveAddon(idx)}>
                 <SegmentAsync
-                  value={addon.name as any}
-                  loadOptions={() => Promise.resolve([]) as any}
+                  value={`addon.name${addon.type === 'function' ? '()' : ''}` as any}
+                  loadOptions={() => Promise.resolve(addonOptions) as any}
                   onChange={handleReselectAddon(idx)}
                 />
               </RemoveablePopover>
