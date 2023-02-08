@@ -1,6 +1,6 @@
 import React from "react";
 import type { GreptimeQuery } from "types";
-import type { GreptimeColumnSchema } from "greptimedb/types";
+import type { GreptimeColumnSchemaDetailed } from "greptimedb/types";
 import type { SelectableValue } from "@grafana/data";
 import { toSelectableValue } from "utils";
 import { SegmentAsync, SegmentSection } from "@grafana/ui";
@@ -27,7 +27,7 @@ type Props = {
   timeColumn: string | undefined;
   changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 
-  onLoadColumnSchema: () => Promise<GreptimeColumnSchema[]>;
+  onLoadColumnSchema: () => Promise<GreptimeColumnSchemaDetailed[]>;
 }
 
 export const SelectSection = (props: Props) => {

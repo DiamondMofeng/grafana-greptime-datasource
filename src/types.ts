@@ -1,4 +1,5 @@
 import type { DataQuery, DataSourceJsonData } from '@grafana/data';
+import { HealthCheckResultDetails } from '@grafana/runtime';
 import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSection';
 import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
 
@@ -43,4 +44,10 @@ export interface GreptimeSourceOptions extends DataSourceJsonData {
  */
 export interface GreptimeSecureJsonData {
   apiKey?: string;
+}
+
+export interface TestingStatus {
+  message?: string | null;
+  status?: string | null;
+  details?: HealthCheckResultDetails;
 }

@@ -1,5 +1,5 @@
 import { FieldType, MutableDataFrame } from '@grafana/data';
-import { GreptimeColumnSchema, GreptimeDataTypes, GreptimeResponse } from './types';
+import { GreptimeColumnSchemaBrief, GreptimeDataTypes, GreptimeResponseSuccess } from './types';
 
 const greptimeTypeToGrafana: Record<GreptimeDataTypes, FieldType> = {
   [GreptimeDataTypes.Null]: FieldType.other,
@@ -37,15 +37,21 @@ export function mapGreptimeTypeToGrafana(greptimeType: GreptimeDataTypes): Field
   return greptimeTypeToGrafana[greptimeType];
 }
 
-export function extractDataRows<T extends any[] = any[]>(response: GreptimeResponse<T>): T[] {
+export function extractDataRows<T extends any[] = any[]>(response: GreptimeResponseSuccess<T>): T[] {
   return response.output[0].records.rows;
 }
 
-export function extractColumnSchemas(response: GreptimeResponse): GreptimeColumnSchema[] {
+export function extractBriefColumnSchemas(response: GreptimeResponseSuccess): GreptimeColumnSchemaBrief[] {
   return response.output[0].records.schema.column_schemas;
 }
 
-export function parseResponseToDataFrame(response: GreptimeResponse): MutableDataFrame {
+export function parseResponseToDataFrame(response: GreptimeResponseSuccess): MutableDataFrame {
+
+  if (!response.output[0].records.rows.length) {
+    // no data in response
+    return new MutableDataFrame();
+  }
+
   const columnSchemas = response.output[0].records.schema.column_schemas;
   const dataRows = response.output[0].records.rows;
   const frame = new MutableDataFrame({

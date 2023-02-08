@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { FieldType, type GrafanaTheme2, type SelectableValue } from "@grafana/data";
 import { InlineLabel, SegmentAsync, useStyles2 } from "@grafana/ui";
 import { css } from "@emotion/css";
-import type { GreptimeColumnSchema } from "greptimedb/types";
+import type { GreptimeColumnSchemaDetailed } from "greptimedb/types";
 import type { GreptimeQuery } from "types";
 import { mapGreptimeTypeToGrafana } from "greptimedb/utils";
 import { toSelectableValue } from "utils";
@@ -12,7 +12,7 @@ import { toSelectableValue } from "utils";
 type Props = {
   fromTable: string | undefined;
   timeColumn: string | undefined;
-  onLoadColumnSchema: () => Promise<GreptimeColumnSchema[]>
+  onLoadColumnSchema: () => Promise<GreptimeColumnSchemaDetailed[]>
   changeQueryByKey: <K extends keyof GreptimeQuery>(key: K, value: GreptimeQuery[K]) => void;
 }
 
