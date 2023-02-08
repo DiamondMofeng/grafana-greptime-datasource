@@ -7,10 +7,9 @@ import type { GreptimeQuery } from 'types';
  * Build the query from the variables selected visual query builder
  */
 
-// TODO should return '*' if no select statements?
 export function processSelectStatements(selectStatements: SelectStatement[] | undefined): string {
-  if (!selectStatements) {
-    return '*';
+  if (!selectStatements?.length) {
+    return '';
   }
 
   return selectStatements.map((stmt) => {
@@ -64,7 +63,8 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
-  const select = `SELECT ${processSelectStatements(selectedColumns)}, ${timeColumn} `;
+  const select = `SELECT ${processSelectStatements(selectedColumns)} ${timeColumn ? `${selectedColumns?.length ? ',' : ''} ${timeColumn}` : ''} `;
+
   const from = `FROM ${fromTable} `;
   const where = whereConditions?.length
     ? `WHERE ${connectWhereConditions(whereConditions)}`
