@@ -46,6 +46,12 @@ export function extractBrifeColumnSchemas(response: GreptimeResponseSuccess): Gr
 }
 
 export function parseResponseToDataFrame(response: GreptimeResponseSuccess): MutableDataFrame {
+
+  if (!response.output[0].records.rows.length) {
+    // no data in response
+    return new MutableDataFrame();
+  }
+
   const columnSchemas = response.output[0].records.schema.column_schemas;
   const dataRows = response.output[0].records.rows;
   const frame = new MutableDataFrame({
