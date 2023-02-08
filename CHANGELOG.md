@@ -11,3 +11,4 @@ Added more features to the visual editor, including `GROUP BY`, `Aggregate Funct
 ## 0.2.1
 
 Auto detect time column after table changes.
+Added detailed error message.
