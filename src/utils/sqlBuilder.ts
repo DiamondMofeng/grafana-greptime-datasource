@@ -63,7 +63,7 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
-  const select = `SELECT ${processSelectStatements(selectedColumns)} ${timeColumn ? `${selectedColumns?.length ? ',' : ''} ${timeColumn}` : ''} `;
+  const select = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
 
   const from = `FROM ${fromTable} `;
   const where = whereConditions?.length
@@ -75,9 +75,9 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
 
   const queryText =
     `${select}
-     ${from}
-     ${where}
-     ${groupBy}
+${from}
+${where}
+${groupBy}
      `;
   return queryText;
 }
