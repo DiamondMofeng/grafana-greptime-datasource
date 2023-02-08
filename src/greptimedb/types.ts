@@ -106,7 +106,7 @@ export enum GreptimeHttpResultCode {
 interface Output<T extends any[] = any[]> {
   records: {
     schema: {
-      column_schemas: GreptimeColumnSchemaBrife[];
+      column_schemas: GreptimeColumnSchemaBrief[];
     };
     rows: T[];
   };
@@ -132,11 +132,17 @@ export type GreptimeResponse<T extends any[] = any[]> =
   | GreptimeResponseSuccess<T>
   | GreptimeResponseFailed;
 
-export interface GreptimeColumnSchemaBrife {
+/**
+ * The column schema in the response of the query
+ */
+export interface GreptimeColumnSchemaBrief {
   name: string;
   data_type: GreptimeDataTypes;
 }
 
+/**
+ * The data rows from `DESC TABLE`
+ */
 export interface GreptimeColumnSchemaDetailed {
   name: string;
   data_type: GreptimeDataTypes;

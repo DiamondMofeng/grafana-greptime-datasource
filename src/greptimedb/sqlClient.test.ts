@@ -1,5 +1,5 @@
 import { GreptimeDBHttpSqlClient } from "./sqlClient";
-import type { GreptimeColumnSchema, GreptimeResponseSuccess } from "./types";
+import type { GreptimeColumnSchemaBrief, GreptimeResponseSuccess } from "./types";
 
 /*
  * TODO: Organize this file better
@@ -8,7 +8,7 @@ import type { GreptimeColumnSchema, GreptimeResponseSuccess } from "./types";
 
 function makeGreptimeResponse<T extends any[] = any[]>(
   rows: T[],
-  schema?: GreptimeColumnSchema[]
+  schema?: GreptimeColumnSchemaBrief[]
 ): GreptimeResponseSuccess<T> {
   return {
     code: 0,
