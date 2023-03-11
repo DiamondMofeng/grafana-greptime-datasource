@@ -56,6 +56,9 @@ export class GreptimeDBHttpSqlClient {
     const response: GreptimeResponseSuccess<T> = await this.fetch({
       url: this.SQL_URL,
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
       params: {
         sql: sql,
         db: this.database,
@@ -81,7 +84,6 @@ export class GreptimeDBHttpSqlClient {
 
   /**
    * Use `DESC TABLE ${table}` to get column schemas.
-   * TODO Currently `DESC` do not support `db` parameter, so we have to use `DESC TABLE ${db}.${table}`
    */
   async queryColumnSchemaOfTable(table: string): Promise<GreptimeColumnSchemaDetailed[]> {
     /** [Field, Type, Null, Default, Semantic Type] */
