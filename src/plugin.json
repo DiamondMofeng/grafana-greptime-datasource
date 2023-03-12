@@ -28,7 +28,12 @@
         "url": "https://github.com/grafana/grafana-starter-datasource/blob/master/LICENSE"
       }
     ],
-    "screenshots": [],
+    "screenshots": [
+      {
+        "name": "sql-config-editor",
+        "path": "img/screenshots/sql-query-editor.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
