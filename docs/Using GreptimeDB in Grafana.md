@@ -1,20 +1,37 @@
-# Using GreptimeDb in Grafana
+# Using GreptimeDB in Grafana
 
 ## Install GreptimeDB
 
-Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/)
+### Manually
 
-For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`.
+Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/), or run [this bash script](https://github.com/DiamondMofeng/grafana-greptime/blob/main/update-greptime.sh) to download the latest release.
+
+For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/reference/configuration)
+
+### Docker
+
+There are also some docker images available on [Docker Hub](https://hub.docker.com/r/greptime/greptimedb).
+
+You can start a GreptimeDB instance with docker like this:
+
+```bash
+ docker run -p 4000-4004:4000-4004 \
+            -p 4242:4242 \
+            -v "greptime-vol:/tmp/greptimedb" \
+            --name greptime \
+            standalone start
+```
 
 ## Install The Plugin
 
+### Manually
 Download the plugin from [this repo's release page](https://github.com/DiamondMofeng/grafana-greptime/tags) or clone the repo then build your own one.  
 
 Put the unzipped plugin folder into your grafana's plugin directory, which default at `/var/lib/grafana/plugins`
 
-As this plugin is currently not signed by Grafana Ofiicial, you have to set your grafana to development mode to load this plugin. You can set environment variable `GF_DEFAULT_APP_MODE=development` or set `app_mode = development` in your grafana.ini
+Since this plugin is currently not signed by Grafana Official, you have to set your grafana to development mode to load this plugin. You can set the environment variable `GF_DEFAULT_APP_MODE=development` or set `app_mode = development` in your grafana.ini
 
-Restart your grafana, then the plugin loads!
+Restart your Grafana and the plugin will be loaded!
 
 ## Add GreptimeDB data source in Grafana
 
@@ -28,46 +45,47 @@ Then click `Save & test`. It will query numbers from your GreptimeDB to check if
 
 ## Visualize your data
 
-Create a new dashboard, then add a panel. 
+If you are a new to GreptimeDB, you may need some dummy data for testing.
 
-In order to let grafana visualize your data, your data must have a time field. 
+First, let's create a time-series table in GreptimeDB. GreptimeDB supports execute sql from HTTP API. You can use `curl` to execute sql.
 
-If you are a new to GreptimeDB, you may need some mock data for test.
-
-Use mysql cli to connect to your GreptimeDB, then create a time series table
-
-```sql
-CREATE TABLE system_metrics (
-    host STRING,
-    idc STRING,
-    cpu_util DOUBLE,
-    memory_util DOUBLE,
-    disk_util DOUBLE,
-    ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(host, idc),
-    TIME INDEX(ts)
-);
+```bash
+curl http://localhost:4000/v1/sql -d "sql=
+    CREATE TABLE system_metrics (               
+    host STRING,                                      
+    idc STRING,                                       
+    cpu_util DOUBLE,                                  
+    memory_util DOUBLE,                               
+    disk_util DOUBLE,                                 
+    ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP,           
+    PRIMARY KEY(host, idc),                           
+    TIME INDEX(ts))"
 ```
 
-I have written a javascript for you to generate a mock sql. Just run it in your browser console, then type it in your mysql cli.
+I have written a bash script for you to insert some dummy data.
 
-```js
-(function mockSql() {
-  let timestamp = new Date().getTime();
-  const INTERVAL = 10000;
-  let sql = 'INSERT INTO system_metrics VALUES ';
-  for (let i = 0; i < 100; i++) {
-    sql += `('host1', 'idc_b', ${Math.random() * 100}, ${Math.random() * 100}, ${Math.random() * 100}, ${
-      timestamp - i * INTERVAL
-    }),`;
-  }
-  return sql.slice(0, sql.length - 1) + ';';
-})()
+```bash
+sql="INSERT INTO system_metrics VALUES"
+
+for i in {1..20}; do
+    host="host$(echo $i%3 | bc)"
+    idc="idc$(echo $i%3 | bc)"
+    cpu_util=$(echo "scale=2; $RANDOM/327.67" | bc)
+    memory_util=$(echo "scale=2; $RANDOM/327.67" | bc)
+    disk_util=$(echo "scale=2; $RANDOM/327.67" | bc)
+    ts=$(echo "$(date -d "-$i minute" +%s) * 1000" | bc)
+    sql="$sql ('$host', '$idc', $cpu_util, $memory_util, $disk_util, $ts)"
+    if [ $i -lt 20 ]; then
+        sql="$sql,"
+    fi
+done
+
+curl http://localhost:4000/v1/sql -d "sql=$sql"
 ```
 
-Return back to Grafana, type `SELECT * FROM system_metrics` in your panel's query area, then save your panel, and see the visualization happens!
+Go back to Grafana, create a new panel, select your metrics in the query area of your panel and watch the visualization happen!
 
-![](https://blog.mofengfeng.com/wp-content/uploads/2022/11/1HC2YH1ZLC64NTPRQ2GSM.png)
+![](https://blog.mofengfeng.com/wp-content/uploads/2023/03/TS5@V5GDLMTJG9@Q1SJM.png)
 
 
 
