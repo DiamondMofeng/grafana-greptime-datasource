@@ -16,3 +16,7 @@ Added detailed error message.
 ## 0.2.2
 
 More detailed user guide.
+
+## 0.2.3
+
+Added a time filter that automatically adds a `WHERE` clause to the query depending on the time range selected in the dashboard.

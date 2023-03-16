@@ -18,7 +18,9 @@ GreptimeDB currently is not production ready. Do not use it in production at the
 
 ### Manually
 
-Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/), or run [this bash script](https://github.com/DiamondMofeng/grafana-greptime/blob/main/update-greptime.sh) to download the latest release.
+Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/). 
+
+This plugin is currently campatiable with GreptimeDB 0.1.1-alpha.
 
 For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/reference/configuration)
 
@@ -39,11 +41,9 @@ docker run  -p 4000-4004:4000-4004 \
 ## Install The Plugin
 
 ### Manually
-Download the plugin from [this repo's release page](https://github.com/DiamondMofeng/grafana-greptime/tags) or clone the repo then build your own one.  
+Download the plugin from [this repo's release page](https://github.com/DiamondMofeng/grafana-greptime-datasource/releases)
 
 Put the unzipped plugin folder into your grafana's plugin directory, which default at `/var/lib/grafana/plugins`
-
-Since this plugin is currently not signed by Grafana Official, you have to set your grafana to development mode to load this plugin. You can set the environment variable `GF_DEFAULT_APP_MODE=development` or set `app_mode = development` in your grafana.ini
 
 Restart your Grafana and the plugin will be loaded!
 
