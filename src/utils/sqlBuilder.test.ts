@@ -140,33 +140,59 @@ describe("where", () => {
         )
     })
 
-    it('will insert a time filter if time column is provided', () => {
-        const conditions: WhereStatement[] = [
-            ['a', '=', 'b', 'AND'],
-            ['c', '=', 'd', 'AND'],
-        ]
-        let result = connectWhereConditions(conditions, ' ')
-        const timeColumn = 'time'
+    describe('about time filter', () => {
+        it('will insert a time filter if time column is provided', () => {
+            const conditions: WhereStatement[] = [
+                ['a', '=', 'b', 'AND'],
+                ['c', '=', 'd', 'AND'],
+            ]
+            let result = connectWhereConditions(conditions, ' ')
+            const timeColumn = 'time'
 
-        result = tryInsertTimeFilterMacro(result, timeColumn)
+            result = tryInsertTimeFilterMacro(result, timeColumn)
 
-        expect(result).toBe(
-            `${TIME_FILTER_MACRO} AND (a = b AND c = d)`
-        )
+            expect(result).toBe(
+                `${TIME_FILTER_MACRO} AND (a = b AND c = d)`
+            )
+        })
+
+        it('will NOT insert a time filter if time column is undefined', () => {
+            const conditions: WhereStatement[] = [
+                ['a', '=', 'b', 'AND'],
+                ['c', '=', 'd', 'AND'],
+            ]
+            let result = connectWhereConditions(conditions, ' ')
+            const timeColumn = undefined
+
+            result = tryInsertTimeFilterMacro(result, timeColumn)
+
+            expect(result).toBe(
+                `a = b AND c = d`
+            )
+        })
+
+        it('conditions string expected to have no length if no conditions and time filter are provided', () => {
+
+            const conditions: WhereStatement[] = []
+            const timeColumn = undefined
+            let result = connectWhereConditions(conditions, ' ')
+            result = tryInsertTimeFilterMacro(result, timeColumn)
+
+            expect(result.length).toBe(0)
+            expect(result).toBe(``)
+        })
+
+        it('expected to have time filter if only time column is provided', () => {
+            const conditions: WhereStatement[] = []
+            const timeColumn = 'time'
+            let result = connectWhereConditions(conditions, ' ')
+            result = tryInsertTimeFilterMacro(result, timeColumn)
+
+            expect(result).toBe(
+                `${TIME_FILTER_MACRO}`
+            )
+        })
+
     })
 
-    it('will NOT insert a time filter if time column is undefined', () => {
-        const conditions: WhereStatement[] = [
-            ['a', '=', 'b', 'AND'],
-            ['c', '=', 'd', 'AND'],
-        ]
-        let result = connectWhereConditions(conditions, ' ')
-        const timeColumn = undefined
-
-        result = tryInsertTimeFilterMacro(result, timeColumn)
-
-        expect(result).toBe(
-            `a = b AND c = d`
-        )
-    })
 })
