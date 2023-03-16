@@ -1,0 +1,35 @@
+# Configuration file version
+apiVersion: 1
+
+datasources:
+
+  - name: Dev-docker-compose
+    type: mofengfeng-greptimedb-datasource
+    access: proxy
+    orgId: 1
+    isDefault: true
+    # <map> Fields to convert to JSON and store in jsonData.
+    jsonData:
+      # <string> Defines the Graphite service's version.
+      URL: http://greptimedb:4000
+      database: public
+      
+    # <map> Fields to encrypt before storing in jsonData.
+    # secureJsonData:
+    editable: true
+
+  - name: Dev-localhost
+    type: mofengfeng-greptimedb-datasource
+    access: proxy
+    orgId: 1
+    isDefault: false
+    # <map> Fields to convert to JSON and store in jsonData.
+    jsonData:
+      URL: http://localhost:4000
+      database: public
+      
+    # <map> Fields to encrypt before storing in jsonData.
+    # secureJsonData:
+    editable: true
+
+  
