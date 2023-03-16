@@ -11,6 +11,7 @@ import {
 
 import { GreptimeQuery, GreptimeSourceOptions } from './types';
 import { GreptimeDBHttpSqlClient } from 'greptimedb/sqlClient';
+import { replaceTimeFilterMacro } from 'utils/timeFilter';
 export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptions> {
   client: GreptimeDBHttpSqlClient;
 
@@ -24,7 +25,15 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
       if (!target.queryText) {
         return new MutableDataFrame();
       }
-      return await this.client.querySqlToDataFrame(target.queryText);
+
+      // TODO combine this into sqlBuilder
+      // do some transformation here
+      let queryText = target.queryText;
+      if (target.timeColumn) {
+        queryText = replaceTimeFilterMacro(queryText, options.range, target.timeColumn);
+      }
+
+      return await this.client.querySqlToDataFrame(queryText);
     });
 
     return Promise.all(promises).then((data) => ({ data }));

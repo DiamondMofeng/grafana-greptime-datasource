@@ -2,6 +2,7 @@ import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/S
 import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
 import type { DataSource } from 'datasource';
 import type { GreptimeQuery } from 'types';
+import { TIME_FILTER_MACRO } from './timeFilter';
 
 /**
  * Build the query from the variables selected visual query builder
@@ -57,27 +58,53 @@ export function connectWhereConditions(
   ).join(sparater);
 }
 
+/**
+ * return original conditions if timeColumn is not provided
+ * otherwise, return a new condition string with time filter macro inserted
+ */
+export function tryInsertTimeFilterMacro(conditions: string, timeColumn: string | undefined): string {
+  if (!timeColumn) {
+    return conditions;
+  }
+
+  if (conditions.length > 0) {
+    return `${TIME_FILTER_MACRO} AND (${conditions})`;
+  } else {
+    return `${TIME_FILTER_MACRO}`;
+  }
+}
+
 export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   if (query.isRawQuery) {
     return query.queryText;
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
-  const select = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
+  let queryText = '';
 
-  const from = `FROM ${fromTable} `;
-  const where = whereConditions?.length
-    ? `WHERE ${connectWhereConditions(whereConditions)}`
+  // SELECT
+  const SELECT = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
+  queryText += `${SELECT}\n`
+
+  // FROM
+  const FROM = `FROM ${fromTable} `;
+  queryText += `${FROM}\n`
+
+  // WHERE
+  let conditions = connectWhereConditions(whereConditions);
+  // insert a time filter macro if time column is provided
+  conditions = tryInsertTimeFilterMacro(conditions, timeColumn);
+
+  const WHERE = conditions.length > 0
+    ? `WHERE ${conditions}`
     : '';
-  const groupBy = groupByColumns?.length
+  queryText += `${WHERE}\n`
+
+  // GROUP BY
+  const GROUP_BY = groupByColumns?.length
     ? `GROUP BY ${groupByColumns.join(', ')}`
     : '';
+  queryText += `${GROUP_BY}\n`
 
-  const queryText =
-    `${select}
-${from}
-${where}
-${groupBy}
-     `;
   return queryText;
 }
