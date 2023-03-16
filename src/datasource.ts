@@ -29,7 +29,9 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
       // TODO combine this into sqlBuilder
       // do some transformation here
       let queryText = target.queryText;
-      queryText = replaceTimeFilterMacro(queryText, options.range);
+      if (target.timeColumn) {
+        queryText = replaceTimeFilterMacro(queryText, options.range, target.timeColumn);
+      }
 
       return await this.client.querySqlToDataFrame(queryText);
     });

@@ -2,6 +2,7 @@ import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/S
 import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
 import type { DataSource } from 'datasource';
 import type { GreptimeQuery } from 'types';
+import { TIME_FILTER_MACRO } from './timeFilter';
 
 /**
  * Build the query from the variables selected visual query builder
@@ -66,9 +67,12 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   const select = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
 
   const from = `FROM ${fromTable} `;
+
+  // TODO find a better way to handle time filter
   const where = whereConditions?.length
-    ? `WHERE ${connectWhereConditions(whereConditions)}`
-    : '';
+    ? `WHERE ${TIME_FILTER_MACRO} AND (${connectWhereConditions(whereConditions)})`
+    : `WHERE ${TIME_FILTER_MACRO}`;
+
   const groupBy = groupByColumns?.length
     ? `GROUP BY ${groupByColumns.join(', ')}`
     : '';
