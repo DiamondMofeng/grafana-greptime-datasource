@@ -20,7 +20,7 @@ services:
 
   greptimedb:
     container_name: 'greptimedb'
-    image: 'greptime/greptimedb:latest'
+    image: 'greptime/greptimedb:0.1.1-alpha'
     ports:
       - 4000:4000
     command: 'standalone start --http-addr=0.0.0.0:4000'
