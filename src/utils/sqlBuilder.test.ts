@@ -2,8 +2,9 @@ import type { SelectStatement } from "components/QueryEditor/VisualQueryEditor/S
 import type { WhereStatement } from "components/QueryEditor/VisualQueryEditor/WhereSection"
 import {
     // buildQuery,
-    connectWhereConditions, processSelectStatements
+    connectWhereConditions, processSelectStatements, tryInsertTimeFilterMacro
 } from "./sqlBuilder"
+import { TIME_FILTER_MACRO } from "./timeFilter"
 
 describe("select statement", () => {
 
@@ -138,5 +139,34 @@ describe("where", () => {
             `a = b AND c = d`
         )
     })
-})
 
+    it('will insert a time filter if time column is provided', () => {
+        const conditions: WhereStatement[] = [
+            ['a', '=', 'b', 'AND'],
+            ['c', '=', 'd', 'AND'],
+        ]
+        let result = connectWhereConditions(conditions, ' ')
+        const timeColumn = 'time'
+
+        result = tryInsertTimeFilterMacro(result, timeColumn)
+
+        expect(result).toBe(
+            `${TIME_FILTER_MACRO} AND (a = b AND c = d)`
+        )
+    })
+
+    it('will NOT insert a time filter if time column is undefined', () => {
+        const conditions: WhereStatement[] = [
+            ['a', '=', 'b', 'AND'],
+            ['c', '=', 'd', 'AND'],
+        ]
+        let result = connectWhereConditions(conditions, ' ')
+        const timeColumn = undefined
+
+        result = tryInsertTimeFilterMacro(result, timeColumn)
+
+        expect(result).toBe(
+            `a = b AND c = d`
+        )
+    })
+})

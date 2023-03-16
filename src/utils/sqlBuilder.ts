@@ -58,6 +58,22 @@ export function connectWhereConditions(
   ).join(sparater);
 }
 
+/**
+ * return original conditions if timeColumn is not provided
+ * otherwise, return a new condition string with time filter macro inserted
+ */
+export function tryInsertTimeFilterMacro(conditions: string, timeColumn: string | undefined): string {
+  if (!timeColumn) {
+    return conditions;
+  }
+
+  if (conditions.length > 0) {
+    return `${TIME_FILTER_MACRO} AND (${conditions})`;
+  } else {
+    return `${TIME_FILTER_MACRO}`;
+  }
+}
+
 export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   if (query.isRawQuery) {
     return query.queryText;
@@ -75,15 +91,10 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   queryText += `${FROM}\n`
 
   // WHERE
-  // insert a time filter macro if time column is provided
   let conditions = connectWhereConditions(whereConditions);
-  if (timeColumn) {
-    if (conditions.length > 0) {
-      conditions = `${TIME_FILTER_MACRO} AND (${conditions})`;
-    } else {
-      conditions = `${TIME_FILTER_MACRO}`;
-    }
-  }
+  // insert a time filter macro if time column is provided
+  conditions = tryInsertTimeFilterMacro(conditions, timeColumn);
+
   const WHERE = conditions.length > 0
     ? `WHERE ${conditions}`
     : '';
