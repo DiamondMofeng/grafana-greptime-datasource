@@ -45,3 +45,6 @@ pkg
 *.go
 go.mod
 go.sum
+
+# temp: provisioning, not ready
+provisioning/
