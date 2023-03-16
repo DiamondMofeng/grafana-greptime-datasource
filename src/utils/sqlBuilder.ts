@@ -64,24 +64,28 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   }
   const { fromTable, timeColumn, selectedColumns, whereConditions, groupByColumns } = query;
 
-  const select = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
+  let queryText = '';
 
-  const from = `FROM ${fromTable} `;
+  // SELECT
+  const SELECT = `SELECT ${processSelectStatements(selectedColumns)}${timeColumn ? `${selectedColumns?.length ? ', ' : ''}${timeColumn}` : ''} `;
+  queryText += `${SELECT}\n`
 
+  // FROM
+  const FROM = `FROM ${fromTable} `;
+  queryText += `${FROM}\n`
+
+  // WHERE
   // TODO find a better way to handle time filter
-  const where = whereConditions?.length
+  const WHERE = whereConditions?.length
     ? `WHERE ${TIME_FILTER_MACRO} AND (${connectWhereConditions(whereConditions)})`
     : `WHERE ${TIME_FILTER_MACRO}`;
+  queryText += `${WHERE}\n`
 
-  const groupBy = groupByColumns?.length
+  // GROUP BY
+  const GROUP_BY = groupByColumns?.length
     ? `GROUP BY ${groupByColumns.join(', ')}`
     : '';
+  queryText += `${GROUP_BY}\n`
 
-  const queryText =
-    `${select}
-${from}
-${where}
-${groupBy}
-     `;
   return queryText;
 }
