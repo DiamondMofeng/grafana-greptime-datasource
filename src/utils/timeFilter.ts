@@ -4,7 +4,8 @@ export const TIME_FILTER_MACRO = "$__timeFilter";
 
 function generateTimeFilter(range: TimeRange, timeColumn: string): string {
   const { from, to } = range;
-  return `${timeColumn} >= ${from.unix()}000 AND ${timeColumn} <= ${to.unix()}000`;
+  // timestamp is in milliseconds in GreptimeDB
+  return `${timeColumn} >= ${from.unix() * 1000} AND ${timeColumn} <= ${to.unix() * 1000}`;
 }
 
 export function replaceTimeFilterMacro(queryText: string, range: TimeRange, timeColumn: string): string {
