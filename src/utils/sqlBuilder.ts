@@ -75,10 +75,18 @@ export function buildQuery(query: GreptimeQuery, datasource: DataSource) {
   queryText += `${FROM}\n`
 
   // WHERE
-  // TODO find a better way to handle time filter
-  const WHERE = whereConditions?.length
-    ? `WHERE ${TIME_FILTER_MACRO} AND (${connectWhereConditions(whereConditions)})`
-    : `WHERE ${TIME_FILTER_MACRO}`;
+  // insert a time filter macro if time column is provided
+  let conditions = connectWhereConditions(whereConditions);
+  if (timeColumn) {
+    if (conditions.length > 0) {
+      conditions = `${TIME_FILTER_MACRO} AND (${conditions})`;
+    } else {
+      conditions = `${TIME_FILTER_MACRO}`;
+    }
+  }
+  const WHERE = conditions.length > 0
+    ? `WHERE ${conditions}`
+    : '';
   queryText += `${WHERE}\n`
 
   // GROUP BY
