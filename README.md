@@ -2,6 +2,11 @@
 
 ![Grafana x GreptimeDB](https://blog.mofengfeng.com/wp-content/uploads/2022/11/plugin_transparent.png)
 
+<!-- Shields -->
+[![CI](https://github.com/DiamondMofeng/grafana-greptime-datasource/actions/workflows/ci.yml/badge.svg)](https://github.com/DiamondMofeng/grafana-greptime-datasource/actions/workflows/ci.yml)
+[![downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=marketplace&prefix=v&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22mofengfeng-greptimedb-datasource%22%29%5D.version&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/mofengfeng-greptimedb-datasource/)
+[![downloads](https://img.shields.io/badge/dynamic/json?logo=grafana&color=F47A20&label=downloads&query=%24.items%5B%3F%28%40.slug%20%3D%3D%20%22mofengfeng-greptimedb-datasource%22%29%5D.downloads&url=https%3A%2F%2Fgrafana.com%2Fapi%2Fplugins)](https://grafana.com/grafana/plugins/mofengfeng-greptimedb-datasource/)
+
 ## Features
 
 Write sql or use the visual query editor in Grafana to query data from GreptimeDB, then visualization happens!
