@@ -20,11 +20,11 @@ Greptime provides cloud-scale, fast and efficient Time Series Data Infrastructur
 
 ## Install 
 
-As this plugin has not been signed by Grafana yet, you may need to manually drag the built plugin folder into your grafana plugin directory, which default at `/var/lib/grafana/plugins`
-
-To get the built plugin, please download it from the release page, or clone the repo then `npm run build`
-
-In order to load any unsigned Grafana plugin, you have to set you Grafana to Development mode. You can set environment variable `GF_DEFAULT_APP_MODE=development` or set `app_mode = development` in your `grafana.ini`
+- From [Grafana Plugin Marketplace](https://grafana.com/grafana/plugins/mofengfeng-greptimedb-datasource/)
+- Using grafana cli 
+  - `grafana-cli plugins install mofengfeng-greptimedb-datasource`
+- Using docker to start a grafana instance with plugin installed
+  - `docker run -d -p 3000:3000 --name=grafana -e "GF_INSTALL_PLUGINS=mofengfeng-greptimedb-datasource" grafana/grafana`
 
 ## Using GreptimeDB in Grafana
 
