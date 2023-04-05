@@ -20,12 +20,16 @@
     },
     "links": [
       {
-        "name": "Website",
-        "url": "https://github.com/grafana/grafana-starter-datasource"
+        "name": "Greptime",
+        "url": "https://www.greptime.com/"
+      },
+      {
+        "name": "Github",
+        "url": "https://github.com/DiamondMofeng/grafana-greptime-datasource"
       },
       {
         "name": "License",
-        "url": "https://github.com/grafana/grafana-starter-datasource/blob/master/LICENSE"
+        "url": "https://github.com/DiamondMofeng/grafana-greptime-datasource/blob/main/LICENSE"
       }
     ],
     "screenshots": [
