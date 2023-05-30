@@ -66,8 +66,8 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
       } else {
         return {
           status: 'error',
-          message: `Error code ${response.code}. 
-          See https://docs.greptime.com/user-guide/supported-protocols/http-api#result-codes-table for more details`,
+          message: `Greptime error code ${response.code}. 
+          See https://github.com/GreptimeTeam/greptimedb/blob/develop/src/common/error/src/status_code.rs for more details`,
         };
       }
     } catch (err) {

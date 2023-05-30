@@ -20,7 +20,7 @@ Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTe
 
 This plugin is currently campatiable with GreptimeDB 0.1.1-alpha.
 
-For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/reference/configuration)
+For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/user-guide/operations/configuration)
 
 ### Docker
 
