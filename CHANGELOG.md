@@ -20,3 +20,9 @@ More detailed user guide.
 ## 0.2.3
 
 Added a time filter that automatically adds a `WHERE` clause to the query depending on the time range selected in the dashboard.
+
+## 0.2.4
+
+Documentation improvements
+
+Update grafanaDependency to ">=9.0.0" to make this plugin install-able in other grafana version.
