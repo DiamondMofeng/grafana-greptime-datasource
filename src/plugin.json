@@ -43,7 +43,7 @@
   },
   "routes": [
     {
-      "url": "{{ .JsonData.URL }}"
+      "url": "{{ .url }}"
     }
   ],
   "dependencies": {
