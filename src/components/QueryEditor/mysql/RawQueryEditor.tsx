@@ -3,8 +3,8 @@ import defaults from 'lodash/defaults';
 import React, { ChangeEvent, PureComponent } from 'react';
 import { CodeEditor, monacoTypes } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';
-import { DataSource } from '../../datasource';
-import { defaultQuery, GreptimeSourceOptions, GreptimeQuery } from '../../types';
+import { DataSource } from 'datasource';
+import { defaultQuery, GreptimeSourceOptions, GreptimeQuery } from 'types';
 
 //TODO consider refactor this component to functional component
 

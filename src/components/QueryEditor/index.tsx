@@ -1,1 +1,1 @@
-export { QueryEditor } from './QueryEditor';
+export { QueryEditor } from './mysql/QueryEditor';

@@ -1,5 +1,5 @@
-import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSection';
-import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
+import type { SelectStatement } from 'components/QueryEditor/mysql/VisualQueryEditor/SelectSection';
+import type { WhereStatement } from 'components/QueryEditor/mysql/VisualQueryEditor/WhereSection';
 import type { DataSource } from 'datasource';
 import type { GreptimeQuery } from 'types';
 import { TIME_FILTER_MACRO } from './timeFilter';

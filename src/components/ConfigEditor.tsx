@@ -10,26 +10,33 @@ interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions
   //place holder
 }
 
-const queryLanguageOptions = [{ label: 'SQL', value: 'sql' }];
+const queryLanguageOptions = [
+  { label: 'SQL', value: 'sql' },
+  { label: 'PromQL', value: 'promql' },
+];
 
 const DEFAULT_DATABASE = 'public';
 
 export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
   const { options, onOptionsChange } = props;
   const { jsonData, secureJsonFields } = options;
-  const secureJsonData = (options.secureJsonData ?? {});
+  const secureJsonData = options.secureJsonData ?? {};
 
   const changeJsonData = <K extends keyof GreptimeSourceOptions>(key: K, value: GreptimeSourceOptions[K]) => {
-    onOptionsChange(produce(options, (opt) => {
-      opt.jsonData[key] = value;
-    }))
+    onOptionsChange(
+      produce(options, (opt) => {
+        opt.jsonData[key] = value;
+      })
+    );
   };
 
   const changeSecureJsonData = <K extends keyof GreptimeSecureJsonData>(key: K, value: GreptimeSecureJsonData[K]) => {
-    onOptionsChange(produce(options, (opt) => {
-      opt.secureJsonData ??= {};
-      opt.secureJsonData[key] = value;
-    }))
+    onOptionsChange(
+      produce(options, (opt) => {
+        opt.secureJsonData ??= {};
+        opt.secureJsonData[key] = value;
+      })
+    );
   };
 
   const onChangeFactory = (key: keyof GreptimeSourceOptions) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,13 +50,15 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
   //TODO  will be replaced by a factory function
   const onResetAPIKey = () => {
     const { onOptionsChange, options } = props;
-    onOptionsChange(produce(options, (opt) => {
-      opt.secureJsonFields ??= {};
-      opt.secureJsonFields.apiKey = false;
-      
-      opt.secureJsonData ??= {};
-      opt.secureJsonData.apiKey = '';
-    }));
+    onOptionsChange(
+      produce(options, (opt) => {
+        opt.secureJsonFields ??= {};
+        opt.secureJsonFields.apiKey = false;
+
+        opt.secureJsonData ??= {};
+        opt.secureJsonData.apiKey = '';
+      })
+    );
   };
 
   return (
@@ -98,7 +107,7 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
               inputWidth={20}
               onChange={onChangeFactory('database')}
               value={jsonData.database ?? DEFAULT_DATABASE}
-            // placeholder={DEFAULT_DATABASE}
+              // placeholder={DEFAULT_DATABASE}
             />
           </div>
         </div>
