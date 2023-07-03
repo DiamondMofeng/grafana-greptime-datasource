@@ -1,5 +1,6 @@
 import React, { type ChangeEvent } from 'react';
 import { Alert, LegacyForms, Select } from '@grafana/ui';
+import { QueryLanguages } from 'greptimedb/types';
 import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import type { GreptimeSourceOptions, GreptimeSecureJsonData } from '../types';
 import produce from 'immer';
@@ -11,8 +12,8 @@ interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions
 }
 
 const queryLanguageOptions = [
-  { label: 'SQL', value: 'sql' },
-  { label: 'PromQL', value: 'promql' },
+  { label: 'SQL', value: QueryLanguages.Mysql },
+  { label: 'PromQL', value: QueryLanguages.PromQL },
 ];
 
 const DEFAULT_DATABASE = 'public';

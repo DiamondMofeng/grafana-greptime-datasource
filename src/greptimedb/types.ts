@@ -103,6 +103,11 @@ export enum GreptimeHttpResultCode {
   // ====== End of auth related status code =====
 }
 
+export enum QueryLanguages {
+  Mysql = 'sql',
+  PromQL = 'PromQL'
+}
+
 interface Output<T extends any[] = any[]> {
   records: {
     schema: {

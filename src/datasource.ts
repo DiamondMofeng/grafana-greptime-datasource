@@ -12,12 +12,15 @@ import {
 import { GreptimeQuery, GreptimeSourceOptions } from './types';
 import { GreptimeDBHttpSqlClient } from 'greptimedb/sqlClient';
 import { replaceTimeFilterMacro } from 'utils/timeFilter';
+import type { QueryLanguages } from 'greptimedb/types';
 export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptions> {
   client: GreptimeDBHttpSqlClient;
+  queryLanguage: QueryLanguages;
 
   constructor(instanceSettings: DataSourceInstanceSettings<GreptimeSourceOptions>) {
     super(instanceSettings);
     this.client = new GreptimeDBHttpSqlClient(instanceSettings.url!, instanceSettings.jsonData.database);
+    this.queryLanguage = instanceSettings.jsonData.queryLanguage
   }
 
   async query(options: DataQueryRequest<GreptimeQuery>): Promise<DataQueryResponse> {
