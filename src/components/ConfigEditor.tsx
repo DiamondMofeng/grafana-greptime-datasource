@@ -88,6 +88,7 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
         dataSourceConfig={options}
         defaultUrl="http://localhost:4000"
         onChange={onOptionsChange}
+        showAccessOptions={true}
         // secureSocksDSProxyEnabled={config.secureSocksDSProxyEnabled}
       />
       {/* <h3 className="page-heading">HTTP</h3> */}
