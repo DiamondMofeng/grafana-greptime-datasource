@@ -26,3 +26,9 @@ Added a time filter that automatically adds a `WHERE` clause to the query depend
 Documentation improvements
 
 Update grafanaDependency to ">=9.0.0" to make this plugin install-able in other grafana version.
+
+## 0.2.5
+
+Add support of authentication
+
+Now campatiable with GreptimeDB 0.3.1 and Greptime Cloud
