@@ -61,7 +61,7 @@ export class GreptimeDBHttpSqlClient {
       },
       params: {
         sql: sql,
-        db: this.database,
+        db: this.database === '' ? undefined : this.database,
       },
     });
 
