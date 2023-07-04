@@ -19,10 +19,10 @@ export class GreptimeDBHttpSqlClient {
     this.SQL_URL = `${this.baseUrl}/v1/sql`;
   }
 
-  async healthCheck(): Promise<boolean> {
-    const response = await getBackendSrv().get<{}>(`${this.baseUrl}/health`);
-    return JSON.stringify(response) === JSON.stringify({});
-  }
+  // async healthCheck(): Promise<boolean> {
+  //   const response = await getBackendSrv().get<{}>(`${this.baseUrl}/admin/health`);
+  //   return JSON.stringify(response) === JSON.stringify({});
+  // }
 
   private async fetch<T extends any[] = any[]>(options: BackendSrvRequest): Promise<GreptimeResponseSuccess<T>> {
     /**

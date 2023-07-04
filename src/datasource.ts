@@ -49,14 +49,16 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
     // Firstly, we use `/health` endpoint to check if the server is alive
     // Then we query `SELECT 1` to check if grafana has the permission to query certain database
 
+    // `/health` has been removed, and we can not access `/admin/health`
+
     // health check
-    const healthy = await this.client.healthCheck();
-    if (!healthy) {
-      return {
-        status: 'error',
-        message: 'Failed to connect to GreptimeDB',
-      };
-    }
+    // const healthy = await this.client.healthCheck();
+    // if (!healthy) {
+    //   return {
+    //     status: 'error',
+    //     message: 'Failed to connect to GreptimeDB',
+    //   };
+    // }
 
     // query check
     try {
@@ -74,6 +76,25 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
         };
       }
     } catch (err) {
+
+      // TODO find a better way to narrow this error
+      if (err instanceof Object) {
+        if ('data' in err) {
+          if (err.data instanceof Object) {
+            if ('message' in err.data) {
+              if (err.data.message === 'Authentication to data source failed') {
+
+                return {
+                  status: 'error',
+                  message: 'Authentication to data source failed. You may also need to check the name of the database.',
+                }
+
+              }
+            }
+          }
+        }
+      }
+
       return {
         status: 'error',
         message: 'Failed to connect to GreptimeDB',
