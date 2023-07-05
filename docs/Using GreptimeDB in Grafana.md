@@ -6,7 +6,7 @@
 
 Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/).
 
-This plugin is currently campatiable with GreptimeDB 0.1.1-alpha.
+This plugin is currently campatiable with GreptimeDB 0.3.1
 
 For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/user-guide/operations/configuration)
 
@@ -21,7 +21,7 @@ docker run  -p 4000-4004:4000-4004 \
             -p 4242:4242 \
             -v "greptime-vol:/tmp/greptimedb" \
             --name greptime \
-            greptime/greptimedb:0.1.1-alpha standalone start
+            greptime/greptimedb:0.3.1 standalone start
 ```
 
 ## Install The Plugin

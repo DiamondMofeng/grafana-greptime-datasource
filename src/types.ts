@@ -1,7 +1,8 @@
 import type { DataQuery, DataSourceJsonData } from '@grafana/data';
 import { HealthCheckResultDetails } from '@grafana/runtime';
-import type { SelectStatement } from 'components/QueryEditor/VisualQueryEditor/SelectSection';
-import type { WhereStatement } from 'components/QueryEditor/VisualQueryEditor/WhereSection';
+import type { SelectStatement } from 'components/QueryEditor/mysql/VisualQueryEditor/SelectSection';
+import type { WhereStatement } from 'components/QueryEditor/mysql/VisualQueryEditor/WhereSection';
+import type { QueryLanguages } from 'greptimedb/types';
 
 export interface GreptimeQuery extends DataQuery {
   isRawQuery?: boolean;
@@ -34,16 +35,16 @@ export const defaultQuery = {
  * These are options configured for each DataSource instance
  */
 export interface GreptimeSourceOptions extends DataSourceJsonData {
-  URL: string; // URL of the GreptimeDB server
+  // URL: string; // URL of the GreptimeDB server
   database: string; // Database to use
-  queryLanguage: string; // Query language to use
+  queryLanguage: QueryLanguages; // Query language to use
 }
 
 /**
  * Value that is used in the backend, but never sent over HTTP to the frontend
  */
 export interface GreptimeSecureJsonData {
-  apiKey?: string;
+  // apiKey?: string;
 }
 
 export interface TestingStatus {

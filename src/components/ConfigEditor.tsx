@@ -1,59 +1,78 @@
 import React, { type ChangeEvent } from 'react';
-import { Alert, LegacyForms, Select } from '@grafana/ui';
+import { Alert, DataSourceHttpSettings, LegacyForms, Select } from '@grafana/ui';
+import { QueryLanguages } from 'greptimedb/types';
 import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import type { GreptimeSourceOptions, GreptimeSecureJsonData } from '../types';
 import produce from 'immer';
 
-const { SecretFormField, FormField } = LegacyForms;
+// TODO clear this file
+
+const {
+  // SecretFormField,
+  FormField,
+} = LegacyForms;
 
 interface Props extends DataSourcePluginOptionsEditorProps<GreptimeSourceOptions, GreptimeSecureJsonData> {
   //place holder
 }
 
-const queryLanguageOptions = [{ label: 'SQL', value: 'sql' }];
+const queryLanguageOptions = [
+  { label: 'SQL', value: QueryLanguages.Mysql },
+  // { label: 'PromQL', value: QueryLanguages.PromQL },
+];
 
 const DEFAULT_DATABASE = 'public';
 
 export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
   const { options, onOptionsChange } = props;
-  const { jsonData, secureJsonFields } = options;
-  const secureJsonData = (options.secureJsonData ?? {});
+  const {
+    jsonData,
+    //  secureJsonFields
+  } = options;
+  // const secureJsonData = options.secureJsonData ?? {};
 
   const changeJsonData = <K extends keyof GreptimeSourceOptions>(key: K, value: GreptimeSourceOptions[K]) => {
-    onOptionsChange(produce(options, (opt) => {
-      opt.jsonData[key] = value;
-    }))
+    onOptionsChange(
+      produce(options, (opt) => {
+        opt.jsonData[key] = value;
+      })
+    );
   };
 
-  const changeSecureJsonData = <K extends keyof GreptimeSecureJsonData>(key: K, value: GreptimeSecureJsonData[K]) => {
-    onOptionsChange(produce(options, (opt) => {
-      opt.secureJsonData ??= {};
-      opt.secureJsonData[key] = value;
-    }))
-  };
+  // const changeSecureJsonData = <K extends keyof GreptimeSecureJsonData>(key: K, value: GreptimeSecureJsonData[K]) => {
+  //   onOptionsChange(
+  //     produce(options, (opt) => {
+  //       opt.secureJsonData ??= {};
+  //       opt.secureJsonData[key] = value;
+  //     })
+  //   );
+  // };
 
   const onChangeFactory = (key: keyof GreptimeSourceOptions) => (event: ChangeEvent<HTMLInputElement>) => {
     changeJsonData(key, event.target.value);
   };
 
-  const onSecureChangeFactory = (key: keyof GreptimeSecureJsonData) => (event: ChangeEvent<HTMLInputElement>) => {
-    changeSecureJsonData(key, event.target.value);
-  };
+  // const onSecureChangeFactory = (key: keyof GreptimeSecureJsonData) => (event: ChangeEvent<HTMLInputElement>) => {
+  //   changeSecureJsonData(key, event.target.value);
+  // };
 
-  //TODO  will be replaced by a factory function
-  const onResetAPIKey = () => {
-    const { onOptionsChange, options } = props;
-    onOptionsChange(produce(options, (opt) => {
-      opt.secureJsonFields ??= {};
-      opt.secureJsonFields.apiKey = false;
-      
-      opt.secureJsonData ??= {};
-      opt.secureJsonData.apiKey = '';
-    }));
-  };
+  // //TODO  will be replaced by a factory function
+  // const onResetAPIKey = () => {
+  //   const { onOptionsChange, options } = props;
+  //   onOptionsChange(
+  //     produce(options, (opt) => {
+  //       opt.secureJsonFields ??= {};
+  //       opt.secureJsonFields.apiKey = false;
+
+  //       opt.secureJsonData ??= {};
+  //       opt.secureJsonData.apiKey = '';
+  //     })
+  //   );
+  // };
 
   return (
     <div>
+      {/* Query Language */}
       <h3 className="page-heading">Query Language</h3>
       <div className="gf-form-group">
         <Select
@@ -64,7 +83,15 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
           onChange={(opt) => changeJsonData('queryLanguage', opt.value!)}
         />
       </div>
-      <h3 className="page-heading">HTTP</h3>
+      {/* HTTP, Auth */}
+      <DataSourceHttpSettings
+        dataSourceConfig={options}
+        defaultUrl="http://localhost:4000"
+        onChange={onOptionsChange}
+        showAccessOptions={true}
+        // secureSocksDSProxyEnabled={config.secureSocksDSProxyEnabled}
+      />
+      {/* <h3 className="page-heading">HTTP</h3> */}
       <Alert severity="info" title="Database Access">
         <p>
           Setting the database for this datasource does not deny access to other databases.
@@ -78,18 +105,7 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
         </p>
       </Alert>
       <div className="gf-form-group">
-        <div className="gf-form-inline">
-          <div className="gf-form">
-            <FormField
-              label="URL"
-              labelWidth={6}
-              inputWidth={20}
-              onChange={onChangeFactory('URL')}
-              value={jsonData.URL || ''}
-              placeholder="http://greptime.example.com"
-            />
-          </div>
-        </div>
+        <h3 className="page-heading">GreptimeDB Details</h3>
         <div className="gf-form-inline">
           <div className="gf-form">
             <FormField
@@ -98,12 +114,12 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
               inputWidth={20}
               onChange={onChangeFactory('database')}
               value={jsonData.database ?? DEFAULT_DATABASE}
-            // placeholder={DEFAULT_DATABASE}
+              // placeholder={DEFAULT_DATABASE}
             />
           </div>
         </div>
       </div>
-      <h3 className="page-heading">Auth</h3>
+      {/* <h3 className="page-heading">Auth</h3>
       <p>We have not implemented any authentication yet.</p>
       <div className="gf-form-group">
         <div className="gf-form-group">
@@ -121,7 +137,7 @@ export const ConfigEditor: React.FunctionComponent<Props> = (props: Props) => {
             />
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

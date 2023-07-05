@@ -1,5 +1,5 @@
-import type { SelectStatement } from "components/QueryEditor/VisualQueryEditor/SelectSection"
-import type { WhereStatement } from "components/QueryEditor/VisualQueryEditor/WhereSection"
+import type { SelectStatement } from "components/QueryEditor/mysql/VisualQueryEditor/SelectSection"
+import type { WhereStatement } from "components/QueryEditor/mysql/VisualQueryEditor/WhereSection"
 import {
   // buildQuery,
   connectWhereConditions, processSelectStatements, tryInsertTimeFilterMacro

@@ -10,10 +10,7 @@
     "author": {
       "name": "Greptime"
     },
-    "keywords": [
-      "datasource",
-      "sql"
-    ],
+    "keywords": ["datasource", "sql"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -41,11 +38,7 @@
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
-  "routes": [
-    {
-      "url": "{{ .JsonData.URL }}"
-    }
-  ],
+  "routes": [],
   "dependencies": {
     "grafanaDependency": ">=9.0.0",
     "plugins": []
