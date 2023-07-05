@@ -9,9 +9,13 @@ import { PromqlQueryEditor } from './promql';
 type Props = QueryEditorProps<DataSource, GreptimeQuery, GreptimeSourceOptions>;
 
 export const QueryEditor: React.FunctionComponent<Props> = (props) => {
-  return props.datasource.queryLanguage === QueryLanguages.Mysql ? (
-    <MysqlQueryEditor {...props} />
-  ) : (
-    <PromqlQueryEditor {...props} />
-  );
+  switch (props.datasource.queryLanguage) {
+    case QueryLanguages.Mysql:
+      return <MysqlQueryEditor {...props} />;
+    case QueryLanguages.PromQL:
+      return <PromqlQueryEditor {...props} />;
+
+    default:
+      return <MysqlQueryEditor {...props} />;
+  }
 };

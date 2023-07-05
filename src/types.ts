@@ -35,7 +35,7 @@ export const defaultQuery = {
  * These are options configured for each DataSource instance
  */
 export interface GreptimeSourceOptions extends DataSourceJsonData {
-  URL: string; // URL of the GreptimeDB server
+  // URL: string; // URL of the GreptimeDB server
   database: string; // Database to use
   queryLanguage: QueryLanguages; // Query language to use
 }
@@ -44,7 +44,7 @@ export interface GreptimeSourceOptions extends DataSourceJsonData {
  * Value that is used in the backend, but never sent over HTTP to the frontend
  */
 export interface GreptimeSecureJsonData {
-  apiKey?: string;
+  // apiKey?: string;
 }
 
 export interface TestingStatus {
