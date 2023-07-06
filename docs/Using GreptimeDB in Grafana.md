@@ -2,11 +2,15 @@
 
 ## Install GreptimeDB
 
+### GreptimeCloud
+
+Visit https://greptime.com/product/cloud for more details.
+
 ### Manually
 
 Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/).
 
-This plugin is currently campatiable with GreptimeDB 0.3.1
+This plugin is currently campatiable with GreptimeDB 0.3.1 and GreptimeCloud.
 
 For demostration, run it in standalone mode `./greptime standalone start`. In case of port conflicts, start with option `-c <config.toml>`. The format of `config.toml` [can be found here](https://docs.greptime.com/user-guide/operations/configuration)
 
@@ -24,22 +28,13 @@ docker run  -p 4000-4004:4000-4004 \
             greptime/greptimedb:0.3.1 standalone start
 ```
 
-## Install The Plugin
-
-### Manually
-Download the plugin from [this repo's release page](https://github.com/DiamondMofeng/grafana-greptime-datasource/releases)
-
-Put the unzipped plugin folder into your grafana's plugin directory, which default at `/var/lib/grafana/plugins`
-
-Restart your Grafana and the plugin will be loaded!
-
 ## Add GreptimeDB data source in Grafana
 
 Add a new data source in grafana, and select GreptimeDB.
 
 ![](https://blog.mofengfeng.com/wp-content/uploads/2022/11/UAX6FW6SG23X2ZX2QY.png)
 
-As currently GreptimeDB has not implement any authentication yet, we just need to fill the URL input box.
+Make sure you have provided a correct database name. If you use greptimecloud, also remember to enable basic auth in the Auth section, then enter your username and password.
 
 Then click `Save & test`. It will query numbers from your GreptimeDB to check if the data source is available. If the test result shows Success, you have successfully added your GreptimeDB as Grafana data source! 
 
@@ -86,19 +81,3 @@ curl http://localhost:4000/v1/sql -d "sql=$sql"
 Go back to Grafana, create a new panel, select your metrics in the query area of your panel and watch the visualization happen!
 
 ![](https://blog.mofengfeng.com/wp-content/uploads/2023/03/TS5@V5GDLMTJG9@Q1SJM.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

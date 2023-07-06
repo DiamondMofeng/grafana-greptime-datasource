@@ -2,21 +2,23 @@
 
 GreptimeDB datasource for grafana
 
-This plugin is currently campatiable with GreptimeDB 0.3.1.
+This plugin is currently campatiable with GreptimeDB 0.3.1 and GreptimeCloud.
+
+This plugin currently only supports querying through SQL.
 
 Learn more about GreptimeDB [Github](https://github.com/GreptimeTeam/greptimedb) | [Website](https://greptime.com)
-
-## !!!MENTION!!!
-
-GreptimeDB currently is not production ready. Do not use it in production at the moment.
 
 # Using GreptimeDB in Grafana
 
 ## Install GreptimeDB
 
+### GreptimeCloud
+
+Visit https://greptime.com/product/cloud for more details.
+
 ### Manually
 
-Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/). 
+Get GreptimeDB from [Greptime's release page here](https://github.com/GreptimeTeam/greptimedb/releases/).
 
 This plugin is currently campatiable with GreptimeDB 0.3.1.
 
@@ -36,22 +38,13 @@ docker run  -p 4000-4004:4000-4004 \
             greptime/greptimedb:0.3.1 standalone start
 ```
 
-## Install The Plugin
-
-### Manually
-Download the plugin from [this repo's release page](https://github.com/DiamondMofeng/grafana-greptime-datasource/releases)
-
-Put the unzipped plugin folder into your grafana's plugin directory, which default at `/var/lib/grafana/plugins`
-
-Restart your Grafana and the plugin will be loaded!
-
 ## Add GreptimeDB data source in Grafana
 
 Add a new data source in grafana, and select GreptimeDB.
 
 ![](https://blog.mofengfeng.com/wp-content/uploads/2022/11/UAX6FW6SG23X2ZX2QY.png)
 
-As currently GreptimeDB has not implement any authentication yet, we just need to fill the URL input box.
+Make sure you have provided a correct database name. If you use greptimecloud, also remember to enable basic auth in the Auth section, then enter your username and password.
 
 Then click `Save & test`. It will query numbers from your GreptimeDB to check if the data source is available. If the test result shows Success, you have successfully added your GreptimeDB as Grafana data source! 
 
