@@ -63,7 +63,7 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
     // query check
     try {
       const response = await this.client.querySql('SELECT 1');
-      if (response.code === 0 && response.output[0].records.rows.length === 1) {
+      if (!response.code && response.output[0].records.rows.length === 1) {
         return {
           status: 'success',
           message: 'Success to connect to GreptimeDB',

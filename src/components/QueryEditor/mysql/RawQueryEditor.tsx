@@ -1,5 +1,3 @@
-import defaults from 'lodash/defaults';
-
 import React, { ChangeEvent, PureComponent } from 'react';
 import { CodeEditor, monacoTypes } from '@grafana/ui';
 import { QueryEditorProps } from '@grafana/data';

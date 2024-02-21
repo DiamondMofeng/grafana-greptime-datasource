@@ -121,7 +121,7 @@ interface Output<T extends any[] = any[]> {
  * T is usually a tuple
  */
 export interface GreptimeResponseSuccess<T extends any[] = any[]> {
-  code: GreptimeHttpResultCode.Success;
+  code?: GreptimeHttpResultCode.Success;
   execution_time_ms: number;
   //this is a single-element array
   output: Array<Output<T>>;
