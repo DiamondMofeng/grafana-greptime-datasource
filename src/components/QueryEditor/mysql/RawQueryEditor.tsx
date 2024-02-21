@@ -40,7 +40,7 @@ export class RawQueryEditor extends PureComponent<Props> {
   };
 
   render() {
-    const query = defaults(this.props.query, defaultQuery);
+    const query = { ...defaultQuery, ...this.props.query };
 
     return (
       <div>

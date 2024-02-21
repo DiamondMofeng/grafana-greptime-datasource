@@ -78,19 +78,15 @@ export class DataSource extends DataSourceApi<GreptimeQuery, GreptimeSourceOptio
     } catch (err) {
 
       // TODO find a better way to narrow this error
-      if (err instanceof Object) {
-        if ('data' in err) {
-          if (err.data instanceof Object) {
-            if ('message' in err.data) {
-              if (err.data.message === 'Authentication to data source failed') {
+      if (err instanceof Object && 'data' in err) {
+        if (err.data instanceof Object && 'message' in err.data) {
+          if (err.data.message === 'Authentication to data source failed') {
 
-                return {
-                  status: 'error',
-                  message: 'Authentication to data source failed. You may also need to check the name of the database.',
-                }
-
-              }
+            return {
+              status: 'error',
+              message: 'Authentication to data source failed. You may also need to check the name of the database.',
             }
+
           }
         }
       }
