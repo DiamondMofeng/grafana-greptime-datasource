@@ -1,3 +1,9 @@
+# DEPRECATED
+
+Please use the official plugin instead
+
+https://github.com/GreptimeTeam/greptimedb-grafana-datasource
+
 # GreptimeDB Datasource Plugin for Grafana
 
 ![Grafana x GreptimeDB](https://blog.mofengfeng.com/wp-content/uploads/2022/11/plugin_transparent.png)
